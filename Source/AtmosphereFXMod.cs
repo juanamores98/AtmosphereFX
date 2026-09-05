@@ -1,7 +1,9 @@
 using ICities;
+using UnityEngine;
 using AtmosphereFX.Config;
 using AtmosphereFX.Options;
 using AtmosphereFX.Runtime;
+using AtmosphereFX.UI;
 
 namespace AtmosphereFX
 {
@@ -11,6 +13,10 @@ namespace AtmosphereFX
     /// </summary>
     public class AtmosphereFXMod : LoadingExtensionBase, IUserMod
     {
+        private const string HostObjectName = "AtmosphereFX2";
+
+        private GameObject _host;
+
         public string Name
         {
             get { return ModConfig.ModName; }
@@ -36,6 +42,37 @@ namespace AtmosphereFX
             if (ModConfig.ApplyOnLoad)
             {
                 SettingsApplier.ApplyAll();
+            }
+
+            DestroyHosts();
+            _host = new GameObject(HostObjectName);
+            _host.AddComponent<AtmosphereEngine>();
+
+            UuiButton.Register(
+                "AtmosphereFX v2",
+                "Fog and atmosphere tuning (F12)",
+                TrayIcon.Make(),
+                show => AtmosphereEngine.OpenWindow());
+        }
+
+        public override void OnLevelUnloading()
+        {
+            base.OnLevelUnloading();
+            UuiButton.Unregister();
+            DestroyHosts();
+        }
+
+        private void DestroyHosts()
+        {
+            while (true)
+            {
+                GameObject leftover = GameObject.Find(HostObjectName);
+                if (!leftover)
+                {
+                    break;
+                }
+
+                UnityEngine.Object.DestroyImmediate(leftover);
             }
         }
     }
