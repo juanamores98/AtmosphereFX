@@ -55,10 +55,12 @@ namespace AtmosphereFX.Config
 
     /// <summary>
     /// Reads and writes the settings document next to the game executable.
+    /// Writes are throttled so slider drags stay cheap.
     /// </summary>
     internal static class ConfigStore
     {
         private const string FileName = "AtmosphereFX2.xml";
+        private static float _lastWrite = -10f;
 
         internal static void Load()
         {
@@ -88,6 +90,12 @@ namespace AtmosphereFX.Config
 
         internal static void Save()
         {
+            if (Time.realtimeSinceStartup - _lastWrite < 0.5f)
+            {
+                return;
+            }
+
+            _lastWrite = Time.realtimeSinceStartup;
             try
             {
                 using (var writer = new StreamWriter(FileName))
