@@ -42,6 +42,8 @@ namespace AtmosphereFX.Config
 
         [XmlElement("applyOnLoad")] public bool ApplyOnLoad { get => ModConfig.ApplyOnLoad; set => ModConfig.ApplyOnLoad = value; }
 
+        [XmlElement("vanillaMode")] public bool VanillaMode { get => ModConfig.VanillaMode; set => ModConfig.VanillaMode = value; }
+
         private static float Clamp(float v, float min, float max)
         {
             return v < min ? min : (v > max ? max : v);

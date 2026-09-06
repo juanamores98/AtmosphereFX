@@ -195,15 +195,29 @@ namespace AtmosphereFX.Options
 
         private static void BuildGeneralGroup(UIHelperBase helper)
         {
-            var group = helper.AddGroup("General");
+            var general = helper.AddGroup("General");
 
-            group.AddCheckbox("Apply when a map loads", ModConfig.ApplyOnLoad, sel =>
+            general.AddCheckbox("Vanilla mode (suspend the mod)", ModConfig.VanillaMode, sel =>
+            {
+                ModConfig.VanillaMode = sel;
+                ConfigStore.Save();
+                if (sel)
+                {
+                    SettingsApplier.RestoreGameDefaults();
+                }
+                else
+                {
+                    SettingsApplier.ApplyAll();
+                }
+            });
+
+            general.AddCheckbox("Apply when a map loads", ModConfig.ApplyOnLoad, sel =>
             {
                 ModConfig.ApplyOnLoad = sel;
                 ConfigStore.Save();
             });
 
-            group.AddButton("Reset to vanilla", () =>
+            general.AddButton("Reset to vanilla", () =>
             {
                 ModConfig.RestoreVanilla();
                 ConfigStore.Save();

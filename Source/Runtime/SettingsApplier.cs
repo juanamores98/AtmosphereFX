@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using AtmosphereFX.Config;
 
 namespace AtmosphereFX.Runtime
@@ -11,6 +11,7 @@ namespace AtmosphereFX.Runtime
     {
         internal static void ApplyAll()
         {
+            VanillaSnapshot.Capture();
             ApplyDynamicFog();
             ApplyCubemapFog();
             ApplyDynamicFogEffect();
@@ -22,6 +23,7 @@ namespace AtmosphereFX.Runtime
 
         internal static void ApplyDynamicFog()
         {
+            VanillaSnapshot.Capture();
             var fog = Object.FindObjectOfType<FogProperties>();
             if (fog == null)
             {
@@ -40,6 +42,7 @@ namespace AtmosphereFX.Runtime
 
         internal static void ApplyCubemapFog()
         {
+            VanillaSnapshot.Capture();
             var fog = Object.FindObjectOfType<FogEffect>();
             if (fog == null)
             {
@@ -52,6 +55,7 @@ namespace AtmosphereFX.Runtime
 
         internal static void ApplyDynamicFogEffect()
         {
+            VanillaSnapshot.Capture();
             var effect = Object.FindObjectOfType<DayNightFogEffect>();
             if (effect != null)
             {
@@ -61,6 +65,7 @@ namespace AtmosphereFX.Runtime
 
         internal static void ApplyRenderProperties()
         {
+            VanillaSnapshot.Capture();
             var props = Object.FindObjectOfType<RenderProperties>();
             if (props == null)
             {
@@ -73,6 +78,15 @@ namespace AtmosphereFX.Runtime
             props.m_inscatteringColor = ModConfig.ResolveScatterColor();
             props.m_volumeFogColor = ModConfig.ResolveVolumeColor();
             props.m_volumeFogStart = ModConfig.VolumeStart;
+        }
+
+        /// <summary>
+        /// Puts every touched component back to the exact state the game
+        /// shipped with (captured before the first modification).
+        /// </summary>
+        internal static void RestoreGameDefaults()
+        {
+            VanillaSnapshot.Restore();
         }
     }
 }

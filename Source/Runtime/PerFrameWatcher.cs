@@ -22,6 +22,11 @@ namespace AtmosphereFX.Runtime
 
         public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
         {
+            if (Config.ModConfig.VanillaMode)
+            {
+                return; // vanilla mode: the mod touches nothing per frame
+            }
+
             if (SunMatchedScatter)
             {
                 if (_renderProperties == null)

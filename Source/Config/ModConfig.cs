@@ -54,6 +54,7 @@ namespace AtmosphereFX.Config
 
         // ---- Behavior ----
         internal static bool ApplyOnLoad = true;
+        internal static bool VanillaMode; // suspend everything and keep the game untouched
 
         internal static void RestoreVanilla()
         {
