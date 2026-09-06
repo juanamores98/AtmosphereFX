@@ -14,10 +14,14 @@ namespace AtmosphereFX.Runtime
 
         private RenderProperties _renderProperties;
         private FogEffect _cubemapFog;
+        private int _lookupTick;
 
         public void OnEnabled()
         {
             Config.ConfigStore.Load();
+            _renderProperties = null;
+            _cubemapFog = null;
+            _lookupTick = 0;
         }
 
         public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
@@ -27,14 +31,16 @@ namespace AtmosphereFX.Runtime
                 return; // vanilla mode: the mod touches nothing per frame
             }
 
+            _lookupTick++;
+
             if (SunMatchedScatter)
             {
-                if (_renderProperties == null)
+                if (_renderProperties == null && (_lookupTick % 60 == 1))
                 {
                     _renderProperties = Object.FindObjectOfType<RenderProperties>();
                 }
 
-                if (_renderProperties != null)
+                if (_renderProperties != null && DayNightProperties.instance != null)
                 {
                     _renderProperties.m_inscatteringColor = DayNightProperties.instance.currentLightColor;
                 }
@@ -42,16 +48,21 @@ namespace AtmosphereFX.Runtime
 
             if (OffAtNight)
             {
-                if (_cubemapFog == null)
+                if (_cubemapFog == null && (_lookupTick % 60 == 1))
                 {
                     _cubemapFog = Object.FindObjectOfType<FogEffect>();
                 }
 
-                if (_cubemapFog != null)
+                if (_cubemapFog != null && SimulationManager.instance != null)
                 {
-                    _cubemapFog.enabled = !SimulationManager.instance.m_isNightTime && Config.ModConfig.CubemapFog;
+                    bool shouldBeEnabled = !SimulationManager.instance.m_isNightTime && Config.ModConfig.CubemapFog;
+                    if (_cubemapFog.enabled != shouldBeEnabled)
+                    {
+                        _cubemapFog.enabled = shouldBeEnabled;
+                    }
                 }
             }
         }
+
     }
 }

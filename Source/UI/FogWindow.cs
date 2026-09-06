@@ -13,13 +13,27 @@ namespace AtmosphereFX.UI
     {
         private static readonly string[] ScatterModes = { "Auto (vanilla)", "Sun matched", "Custom" };
 
-        private Rect _rect = new Rect(40f, 60f, 470f, 500f);
+        private Rect _rect = new Rect(ModConfig.WindowX, ModConfig.WindowY, 470f, 500f);
         private Vector2 _scroll;
-        private float _lastSave = -10f;
 
         internal void Draw(int id)
         {
+            if (_rect.x != ModConfig.WindowX || _rect.y != ModConfig.WindowY)
+            {
+                _rect.x = Mathf.Clamp(ModConfig.WindowX, 0f, Mathf.Max(0f, Screen.width - _rect.width));
+                _rect.y = Mathf.Clamp(ModConfig.WindowY, 0f, Mathf.Max(0f, Screen.height - _rect.height));
+            }
+
+            Rect oldRect = _rect;
             _rect = GUI.Window(id, _rect, DrawWindow, "AtmosphereFX v2");
+            if (_rect.x != oldRect.x || _rect.y != oldRect.y)
+            {
+                _rect.x = Mathf.Clamp(_rect.x, 0f, Mathf.Max(0f, Screen.width - _rect.width));
+                _rect.y = Mathf.Clamp(_rect.y, 0f, Mathf.Max(0f, Screen.height - _rect.height));
+                ModConfig.WindowX = _rect.x;
+                ModConfig.WindowY = _rect.y;
+                ConfigStore.Save(false);
+            }
         }
 
         private void DrawWindow(int id)
@@ -134,12 +148,12 @@ namespace AtmosphereFX.UI
 
         private static void Persist()
         {
-            ConfigStore.Save();
+            ConfigStore.Save(false);
         }
 
         private static float Section(string title, float y)
         {
-            GUI.Label(new Rect(6f, y, 300f, 24f), "<b>" + title + "</b>");
+            GUI.Label(new Rect(6f, y, 300f, 24f), "<b><color=#4FC3F7>" + title + "</color></b>");
             return y + 26f;
         }
 
@@ -152,7 +166,7 @@ namespace AtmosphereFX.UI
             if (!Mathf.Approximately(snapped, value))
             {
                 onChange(snapped);
-                ConfigStore.Save();
+                ConfigStore.Save(false);
             }
 
             return y + 26f;

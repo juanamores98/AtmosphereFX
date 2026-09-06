@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using AtmosphereFX.Config;
 
 namespace AtmosphereFX.Runtime
@@ -6,9 +6,23 @@ namespace AtmosphereFX.Runtime
     /// <summary>
     /// Pushes the v2 configuration into the game's render components.
     /// All mappings are direct; there are no intermediate transforms.
+    /// Cached component references avoid per-invocation FindObjectOfType.
     /// </summary>
     internal static class SettingsApplier
     {
+        private static FogProperties _fogProperties;
+        private static FogEffect _cubemapFog;
+        private static DayNightFogEffect _dynamicEffect;
+        private static RenderProperties _renderProperties;
+
+        public static void ClearCache()
+        {
+            _fogProperties = null;
+            _cubemapFog = null;
+            _dynamicEffect = null;
+            _renderProperties = null;
+        }
+
         internal static void ApplyAll()
         {
             VanillaSnapshot.Capture();
@@ -24,60 +38,74 @@ namespace AtmosphereFX.Runtime
         internal static void ApplyDynamicFog()
         {
             VanillaSnapshot.Capture();
-            var fog = Object.FindObjectOfType<FogProperties>();
-            if (fog == null)
+            if (_fogProperties == null)
             {
-                return;
+                _fogProperties = Object.FindObjectOfType<FogProperties>();
+                if (_fogProperties == null)
+                {
+                    return;
+                }
             }
 
-            fog.m_ColorDecay = ModConfig.ColorDecay;
-            fog.m_FogDensity = ModConfig.Density;
-            fog.m_NoiseContribution = ModConfig.Noise;
-            fog.m_edgeFog = ModConfig.EdgeFog;
-            fog.m_FogHeight = (int)ModConfig.FogHeight;
-            fog.m_HorizonHeight = (int)ModConfig.HorizonHeight;
-            fog.m_FogStart = (int)ModConfig.StartDistance;
-            fog.m_WindSpeed = ModConfig.WindSpeed;
+            _fogProperties.m_ColorDecay = ModConfig.ColorDecay;
+            _fogProperties.m_FogDensity = ModConfig.Density;
+            _fogProperties.m_NoiseContribution = ModConfig.Noise;
+            _fogProperties.m_edgeFog = ModConfig.EdgeFog;
+            _fogProperties.m_FogHeight = (int)ModConfig.FogHeight;
+            _fogProperties.m_HorizonHeight = (int)ModConfig.HorizonHeight;
+            _fogProperties.m_FogStart = (int)ModConfig.StartDistance;
+            _fogProperties.m_WindSpeed = ModConfig.WindSpeed;
         }
 
         internal static void ApplyCubemapFog()
         {
             VanillaSnapshot.Capture();
-            var fog = Object.FindObjectOfType<FogEffect>();
-            if (fog == null)
+            if (_cubemapFog == null)
             {
-                return;
+                _cubemapFog = Object.FindObjectOfType<FogEffect>();
+                if (_cubemapFog == null)
+                {
+                    return;
+                }
             }
 
-            fog.enabled = ModConfig.CubemapFog;
-            fog.m_edgeFog = ModConfig.EdgeFog;
+            _cubemapFog.enabled = ModConfig.CubemapFog;
+            _cubemapFog.m_edgeFog = ModConfig.EdgeFog;
         }
 
         internal static void ApplyDynamicFogEffect()
         {
             VanillaSnapshot.Capture();
-            var effect = Object.FindObjectOfType<DayNightFogEffect>();
-            if (effect != null)
+            if (_dynamicEffect == null)
             {
-                effect.enabled = ModConfig.DynamicFog;
+                _dynamicEffect = Object.FindObjectOfType<DayNightFogEffect>();
+                if (_dynamicEffect == null)
+                {
+                    return;
+                }
             }
+
+            _dynamicEffect.enabled = ModConfig.DynamicFog;
         }
 
         internal static void ApplyRenderProperties()
         {
             VanillaSnapshot.Capture();
-            var props = Object.FindObjectOfType<RenderProperties>();
-            if (props == null)
+            if (_renderProperties == null)
             {
-                return;
+                _renderProperties = Object.FindObjectOfType<RenderProperties>();
+                if (_renderProperties == null)
+                {
+                    return;
+                }
             }
 
-            props.m_useVolumeFog = ModConfig.VolumeFog;
-            props.m_inscatteringExponent = ModConfig.ScatterFalloff;
-            props.m_inscatteringIntensity = ModConfig.ScatterStrength;
-            props.m_inscatteringColor = ModConfig.ResolveScatterColor();
-            props.m_volumeFogColor = ModConfig.ResolveVolumeColor();
-            props.m_volumeFogStart = ModConfig.VolumeStart;
+            _renderProperties.m_useVolumeFog = ModConfig.VolumeFog;
+            _renderProperties.m_inscatteringExponent = ModConfig.ScatterFalloff;
+            _renderProperties.m_inscatteringIntensity = ModConfig.ScatterStrength;
+            _renderProperties.m_inscatteringColor = ModConfig.ResolveScatterColor();
+            _renderProperties.m_volumeFogColor = ModConfig.ResolveVolumeColor();
+            _renderProperties.m_volumeFogStart = ModConfig.VolumeStart;
         }
 
         /// <summary>

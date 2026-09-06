@@ -40,6 +40,9 @@ namespace AtmosphereFX.Config
         [XmlElement("volumeB")] public float VolumeB { get => ModConfig.VolumeB; set => ModConfig.VolumeB = Clamp(value, 0f, 1f); }
         [XmlElement("volumeStart")] public float VolumeStart { get => ModConfig.VolumeStart; set => ModConfig.VolumeStart = Clamp(value, 0f, 4000f); }
 
+        [XmlElement("windowX")] public float WindowX { get => ModConfig.WindowX; set => ModConfig.WindowX = value; }
+        [XmlElement("windowY")] public float WindowY { get => ModConfig.WindowY; set => ModConfig.WindowY = value; }
+
         [XmlElement("applyOnLoad")] public bool ApplyOnLoad { get => ModConfig.ApplyOnLoad; set => ModConfig.ApplyOnLoad = value; }
 
         [XmlElement("vanillaMode")] public bool VanillaMode { get => ModConfig.VanillaMode; set => ModConfig.VanillaMode = value; }
@@ -57,12 +60,13 @@ namespace AtmosphereFX.Config
 
     /// <summary>
     /// Reads and writes the settings document next to the game executable.
-    /// Writes are throttled so slider drags stay cheap.
+    /// Writes are throttled so slider drags stay cheap without losing the final value.
     /// </summary>
     internal static class ConfigStore
     {
         private const string FileName = "AtmosphereFX2.xml";
         private static float _lastWrite = -10f;
+        private static bool _dirty;
 
         internal static void Load()
         {
@@ -90,13 +94,27 @@ namespace AtmosphereFX.Config
             }
         }
 
-        internal static void Save()
+        internal static void Save(bool immediate = false)
         {
-            if (Time.realtimeSinceStartup - _lastWrite < 0.5f)
+            _dirty = true;
+            float now = Time.realtimeSinceStartup;
+            if (immediate || now - _lastWrite >= 1.0f)
             {
-                return;
+                SaveImmediate();
             }
+        }
 
+        internal static void CheckPendingSave()
+        {
+            if (_dirty && Time.realtimeSinceStartup - _lastWrite >= 1.0f)
+            {
+                SaveImmediate();
+            }
+        }
+
+        internal static void SaveImmediate()
+        {
+            _dirty = false;
             _lastWrite = Time.realtimeSinceStartup;
             try
             {
@@ -112,3 +130,4 @@ namespace AtmosphereFX.Config
         }
     }
 }
+

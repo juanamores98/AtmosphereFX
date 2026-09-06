@@ -1,4 +1,5 @@
 using UnityEngine;
+using AtmosphereFX.Config;
 using AtmosphereFX.UI;
 
 namespace AtmosphereFX.Runtime
@@ -35,6 +36,13 @@ namespace AtmosphereFX.Runtime
             {
                 _open = !_open;
             }
+
+            ConfigStore.CheckPendingSave();
+        }
+
+        private void OnDestroy()
+        {
+            ConfigStore.SaveImmediate();
         }
 
         private void OnGUI()

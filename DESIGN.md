@@ -47,11 +47,26 @@ XML propio (`AtmosphereFX2.xml`, raíz `atmosphereFx`, `schema="2"`) con validac
 de rango en cada propiedad al deserializar. Archivo situado junto al ejecutable
 del juego (directorio de trabajo del proceso).
 
+- **Persistencia de interfaz**: Guarda `windowX` y `windowY` con clamp a la resolución de pantalla.
+- **Throttling de E/S**: El guardado interactivo (sliders, arrastre de ventana) se difiere 1.0 segundo para evitar bloqueos del hilo principal. Flushes inmediatos (`SaveImmediate`) ocurren al descargar el nivel o cerrar la ventana.
+
+## Rendimiento y Optimizaciones (v2 Senior Refactor)
+
+- **`SettingsApplier` Caching**: Caché estático de `FogProperties`, `FogEffect`, `DayNightFogEffect` y `RenderProperties`. Invalida/limpia referencias en `ClearCache()` al descargar niveles.
+- **`PerFrameWatcher` Throttling**: En vez de invocar `Object.FindObjectOfType` en cada frame para buscar componentes faltantes, las búsquedas se amortiguan a intervalos de 60 frames. Se añade guardia de asignación en `FogEffect.enabled` para no invocar setters de Unity innecesariamente.
+- **Identidad Visual Unificada**: Encabezados de sección con acento cian `#4FC3F7` y consistencia métrica de espaciado con LumenFX, ClassicLightFX y SceneFX.
+
+## Suite Section API (Interoperabilidad con SceneFX)
+
+AtmosphereFX expone dos métodos públicos estáticos en `AtmosphereFXMod`:
+- `public static bool ApplySuiteSection(string xml)` / `(XmlElement element)`: Permite a SceneFX (u otros coordinadores) aplicar un bloque `<atmospherefx>` en vivo y persistirlo.
+- `public static string ExportSuiteSection()`: Exporta el estado actual de la atmósfera como un fragmento XML estructurado para suites completas.
+
 ## Arquitectura
 
-- `Config/ModConfig` — modelo estático de valores + resolución de colores.
-- `Config/ConfigFile` — esquema XML v2 + almacenamiento.
-- `Runtime/SettingsApplier` — única vía de escritura hacia los componentes.
-- `Runtime/PerFrameWatcher` — comportamientos por tick (color igualado al sol,
-  apagado nocturno).
+- `Config/ModConfig` — modelo estático de valores + resolución de colores + coordenadas de ventana.
+- `Config/ConfigFile` — esquema XML v2 + almacenamiento desacoplado con timer de throttle.
+- `Runtime/SettingsApplier` — única vía de escritura hacia los componentes con referencias cacheadas.
+- `Runtime/PerFrameWatcher` — comportamientos por tick optimizados (color igualado al sol, apagado nocturno con guardia).
+- `UI/FogWindow` — ventana interactiva con persistencia de posición y estilo visual unificado.
 - `Options/` — panel de opciones y fábrica de controles.
