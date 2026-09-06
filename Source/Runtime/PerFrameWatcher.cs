@@ -16,9 +16,9 @@ namespace AtmosphereFX.Runtime
         private FogEffect _cubemapFog;
         private int _lookupTick;
 
-        public void OnEnabled()
+        public override void OnCreated(IThreading extension)
         {
-            Config.ConfigStore.Load();
+            base.OnCreated(extension);
             _renderProperties = null;
             _cubemapFog = null;
             _lookupTick = 0;

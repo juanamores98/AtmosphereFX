@@ -4,21 +4,23 @@ namespace AtmosphereFX.Runtime
 {
     /// <summary>
     /// Captures the game's untouched render state before the first write and
-    /// restores it on demand. This is the true "vanilla" fallback: even if a
-    /// user saves an extreme configuration, one call returns every component
-    /// to the exact values the game shipped with.
+    /// restores it on demand. Each component is tracked independently so a
+    /// component that was never captured is never restored as zero.
     /// </summary>
     internal static class VanillaSnapshot
     {
-        private static bool _captured;
+        private static bool _fogCaptured;
+        private static bool _fogEffectCaptured;
+        private static bool _dayNightFogCaptured;
+        private static bool _renderPropsCaptured;
 
         private static float _colorDecay;
         private static float _fogDensity;
         private static float _noise;
         private static float _windSpeed;
-        private static int _fogHeight;
-        private static int _horizonHeight;
-        private static int _fogStart;
+        private static float _fogHeight;
+        private static float _horizonHeight;
+        private static float _fogStart;
         private static bool _fogEdgeFog;
 
         private static bool _fogEffectEnabled;
@@ -34,49 +36,42 @@ namespace AtmosphereFX.Runtime
 
         internal static bool Captured
         {
-            get { return _captured; }
-        }
-
-        internal static void ResetCapture()
-        {
-            _captured = false;
+            get { return _fogCaptured || _fogEffectCaptured || _dayNightFogCaptured || _renderPropsCaptured; }
         }
 
         internal static void Capture()
         {
-            if (_captured)
-            {
-                return;
-            }
-
             var fog = Object.FindObjectOfType<FogProperties>();
-            if (fog != null)
+            if (fog != null && !_fogCaptured)
             {
                 _colorDecay = fog.m_ColorDecay;
                 _fogDensity = fog.m_FogDensity;
                 _noise = fog.m_NoiseContribution;
                 _windSpeed = fog.m_WindSpeed;
-                _fogHeight = (int)fog.m_FogHeight;
-                _horizonHeight = (int)fog.m_HorizonHeight;
-                _fogStart = (int)fog.m_FogStart;
+                _fogHeight = fog.m_FogHeight;
+                _horizonHeight = fog.m_HorizonHeight;
+                _fogStart = fog.m_FogStart;
                 _fogEdgeFog = fog.m_edgeFog;
+                _fogCaptured = true;
             }
 
             var fogEffect = Object.FindObjectOfType<FogEffect>();
-            if (fogEffect != null)
+            if (fogEffect != null && !_fogEffectCaptured)
             {
                 _fogEffectEnabled = fogEffect.enabled;
                 _fogEffectEdge = fogEffect.m_edgeFog;
+                _fogEffectCaptured = true;
             }
 
             var dayNightFog = Object.FindObjectOfType<DayNightFogEffect>();
-            if (dayNightFog != null)
+            if (dayNightFog != null && !_dayNightFogCaptured)
             {
                 _dayNightFogEnabled = dayNightFog.enabled;
+                _dayNightFogCaptured = true;
             }
 
             var props = Object.FindObjectOfType<RenderProperties>();
-            if (props != null)
+            if (props != null && !_renderPropsCaptured)
             {
                 _useVolumeFog = props.m_useVolumeFog;
                 _inscatterExponent = props.m_inscatteringExponent;
@@ -84,20 +79,22 @@ namespace AtmosphereFX.Runtime
                 _inscatterColor = props.m_inscatteringColor;
                 _volumeColor = props.m_volumeFogColor;
                 _volumeStart = props.m_volumeFogStart;
+                _renderPropsCaptured = true;
             }
+        }
 
-            _captured = fog != null || props != null || fogEffect != null;
+        internal static void ResetCapture()
+        {
+            _fogCaptured = false;
+            _fogEffectCaptured = false;
+            _dayNightFogCaptured = false;
+            _renderPropsCaptured = false;
         }
 
         internal static void Restore()
         {
-            if (!_captured)
-            {
-                return;
-            }
-
             var fog = Object.FindObjectOfType<FogProperties>();
-            if (fog != null)
+            if (fog != null && _fogCaptured)
             {
                 fog.m_ColorDecay = _colorDecay;
                 fog.m_FogDensity = _fogDensity;
@@ -110,20 +107,20 @@ namespace AtmosphereFX.Runtime
             }
 
             var fogEffect = Object.FindObjectOfType<FogEffect>();
-            if (fogEffect != null)
+            if (fogEffect != null && _fogEffectCaptured)
             {
                 fogEffect.enabled = _fogEffectEnabled;
                 fogEffect.m_edgeFog = _fogEffectEdge;
             }
 
             var dayNightFog = Object.FindObjectOfType<DayNightFogEffect>();
-            if (dayNightFog != null)
+            if (dayNightFog != null && _dayNightFogCaptured)
             {
                 dayNightFog.enabled = _dayNightFogEnabled;
             }
 
             var props = Object.FindObjectOfType<RenderProperties>();
-            if (props != null)
+            if (props != null && _renderPropsCaptured)
             {
                 props.m_useVolumeFog = _useVolumeFog;
                 props.m_inscatteringExponent = _inscatterExponent;

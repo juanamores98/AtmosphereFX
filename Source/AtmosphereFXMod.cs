@@ -42,10 +42,8 @@ namespace AtmosphereFX
             if (ModConfig.VanillaMode)
             {
                 SettingsApplier.RestoreGameDefaults();
-                return;
             }
-
-            if (ModConfig.ApplyOnLoad)
+            else if (ModConfig.ApplyOnLoad)
             {
                 SettingsApplier.ApplyAll();
             }
@@ -59,6 +57,19 @@ namespace AtmosphereFX
                 "Fog and atmosphere tuning (Ctrl+Alt+A)",
                 TrayIcon.Make(),
                 show => AtmosphereEngine.OpenWindow());
+        }
+
+        public void OnDisabled()
+        {
+            UuiButton.Unregister();
+            ConfigStore.SaveImmediate();
+            if (!ModConfig.VanillaMode)
+            {
+                SettingsApplier.RestoreGameDefaults();
+            }
+
+            VanillaSnapshot.ResetCapture();
+            DestroyHosts();
         }
 
         public override void OnLevelUnloading()
