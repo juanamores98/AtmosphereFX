@@ -56,7 +56,7 @@ namespace AtmosphereFX
 
             UuiButton.Register(
                 "AtmosphereFX v2",
-                "Fog and atmosphere tuning (F12)",
+                "Fog and atmosphere tuning (Ctrl+Alt+A)",
                 TrayIcon.Make(),
                 show => AtmosphereEngine.OpenWindow());
         }
@@ -67,6 +67,7 @@ namespace AtmosphereFX
             UuiButton.Unregister();
             ConfigStore.SaveImmediate();
             SettingsApplier.ClearCache();
+            VanillaSnapshot.ResetCapture();
             DestroyHosts();
         }
 

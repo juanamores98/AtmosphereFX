@@ -37,6 +37,11 @@ namespace AtmosphereFX.Runtime
             get { return _captured; }
         }
 
+        internal static void ResetCapture()
+        {
+            _captured = false;
+        }
+
         internal static void Capture()
         {
             if (_captured)

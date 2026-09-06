@@ -5,7 +5,7 @@ using AtmosphereFX.UI;
 namespace AtmosphereFX.Runtime
 {
     /// <summary>
-    /// Scene host for the in-game window (F12) and the tray button state.
+    /// Scene host for the in-game window (Ctrl+Alt+A) and the tray button state.
     /// </summary>
     public class AtmosphereEngine : MonoBehaviour
     {
@@ -32,7 +32,7 @@ namespace AtmosphereFX.Runtime
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F12))
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.A))
             {
                 _open = !_open;
             }
