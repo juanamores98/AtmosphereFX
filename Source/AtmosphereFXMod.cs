@@ -1,4 +1,4 @@
-using ICities;
+﻿using ICities;
 using UnityEngine;
 using AtmosphereFX.Config;
 using AtmosphereFX.Options;
@@ -150,6 +150,19 @@ namespace AtmosphereFX
                     else if (name == "edgefog" && bool.TryParse(val, out b)) { ModConfig.EdgeFogDynamic = b; ModConfig.EdgeFogCubemap = b; }
                     else if (name == "edgefogdynamic" && bool.TryParse(val, out b)) ModConfig.EdgeFogDynamic = b;
                     else if (name == "edgefogcubemap" && bool.TryParse(val, out b)) ModConfig.EdgeFogCubemap = b;
+                    else if (name == "vanillamode" && bool.TryParse(val, out b))
+                    {
+                        // Mismo camino que la casilla de opciones.
+                        ModConfig.VanillaMode = b;
+                        if (b)
+                        {
+                            SettingsApplier.RestoreGameDefaults();
+                        }
+                        else
+                        {
+                            SettingsApplier.ApplyAll();
+                        }
+                    }
                     else if (name == "cubemapfog" && bool.TryParse(val, out b)) ModConfig.CubemapFog = b;
                     else if (name == "offatnight" && bool.TryParse(val, out b)) ModConfig.OffAtNight = b;
                     else if (name == "volumefog" && bool.TryParse(val, out b)) ModConfig.VolumeFog = b;
@@ -206,6 +219,7 @@ namespace AtmosphereFX
                 "    <volumeG>{20}</volumeG>\n" +
                 "    <volumeB>{21}</volumeB>\n" +
                 "    <volumeStart>{22}</volumeStart>\n" +
+                "    <vanillaMode>{24}</vanillaMode>\n" +
                 "  </atmospherefx>",
                 ModConfig.DynamicFog.ToString().ToLowerInvariant(),
                 ModConfig.ColorDecay.ToString("0.000", c),
@@ -230,7 +244,8 @@ namespace AtmosphereFX
                 ModConfig.VolumeG.ToString("0.000", c),
                 ModConfig.VolumeB.ToString("0.000", c),
                 ModConfig.VolumeStart.ToString("0.0", c),
-                ModConfig.EdgeFogCubemap.ToString().ToLowerInvariant());
+                ModConfig.EdgeFogCubemap.ToString().ToLowerInvariant(),
+                ModConfig.VanillaMode.ToString().ToLowerInvariant());
         }
     }
 }
