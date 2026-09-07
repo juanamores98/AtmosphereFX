@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using AtmosphereFX.Config;
 using AtmosphereFX.UI;
 
@@ -30,11 +30,21 @@ namespace AtmosphereFX.Runtime
             _window = new FogWindow();
         }
 
+        /// <summary>Abre o cierra la ventana. Lo mismo que Ctrl+Alt+A.</summary>
+        /// <remarks>
+        /// Publica y estatica a proposito: es el punto por el que otro mod de la suite puede
+        /// llevarte a este panel sin que tengas que acordarte del atajo.
+        /// </remarks>
+        public static void ToggleWindow()
+        {
+            _open = !_open;
+        }
+
         private void Update()
         {
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.A))
             {
-                _open = !_open;
+                ToggleWindow();
             }
 
             ConfigStore.CheckPendingSave();
