@@ -197,16 +197,42 @@ namespace AtmosphereFX.UI
             return y + 26f;
         }
 
+        /// <summary>
+        /// Un deslizador que solo escribe cuando el usuario lo mueve.
+        /// </summary>
+        /// <remarks>
+        /// <b>Que hacia mal.</b> Redondeaba el valor al paso mas cercano y lo comparaba con el
+        /// actual; si no coincidian, lo escribia. Como un valor cargado de un preset casi nunca
+        /// cae justo en un multiplo del paso, el deslizador reescribia la configuracion sola
+        /// nada mas abrir la ventana. Medido: la receta del usuario entraba con densidad
+        /// 0.00006, ruido 0.51 y distancia 2852, y la ventana los dejaba en 0.00005, 0.52 y
+        /// 2850 sin que nadie tocara nada. Ademas eso disparaba un guardado y una aplicacion
+        /// cada vez, lo que se notaba como tirones.
+        ///
+        /// <b>Como se arregla.</b> IMGUI ya avisa de si un control cambio por accion del
+        /// usuario: <c>GUI.changed</c>. Se aisla alrededor del control y solo entonces se
+        /// redondea y se escribe. Sin interaccion, el deslizador solo dibuja.
+        /// </remarks>
         private static float Slider(string label, float value, float min, float max, float step, float y, Action<float> onChange, string format = "0.00")
         {
             GUI.Label(new Rect(6f, y, 100f, 22f), label);
+
+            bool changedBefore = GUI.changed;
+            GUI.changed = false;
             float raw = GUI.HorizontalSlider(new Rect(110f, y + 3f, 250f, 20f), value, min, max);
-            float snapped = Mathf.Round(raw / step) * step;
-            GUI.Label(new Rect(368f, y, 90f, 22f), snapped.ToString(format));
-            if (!Mathf.Approximately(snapped, value))
+            bool moved = GUI.changed;
+            GUI.changed = changedBefore || moved;
+
+            GUI.Label(new Rect(368f, y, 90f, 22f), (moved ? raw : value).ToString(format));
+
+            if (moved)
             {
-                onChange(snapped);
-                ConfigStore.Save(false);
+                float snapped = Mathf.Round(raw / step) * step;
+                if (!Mathf.Approximately(snapped, value))
+                {
+                    onChange(snapped);
+                    ConfigStore.Save(false);
+                }
             }
 
             return y + 26f;
