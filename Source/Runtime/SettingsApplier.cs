@@ -50,7 +50,7 @@ namespace AtmosphereFX.Runtime
             _fogProperties.m_ColorDecay = ModConfig.ColorDecay;
             _fogProperties.m_FogDensity = ModConfig.Density;
             _fogProperties.m_NoiseContribution = ModConfig.Noise;
-            _fogProperties.m_edgeFog = ModConfig.EdgeFog;
+            _fogProperties.m_edgeFog = ModConfig.EdgeFogDynamic;
             _fogProperties.m_FogHeight = (int)ModConfig.FogHeight;
             _fogProperties.m_HorizonHeight = (int)ModConfig.HorizonHeight;
             _fogProperties.m_FogStart = (int)ModConfig.StartDistance;
@@ -70,7 +70,7 @@ namespace AtmosphereFX.Runtime
             }
 
             _cubemapFog.enabled = ModConfig.CubemapFog;
-            _cubemapFog.m_edgeFog = ModConfig.EdgeFog;
+            _cubemapFog.m_edgeFog = ModConfig.EdgeFogCubemap;
         }
 
         internal static void ApplyDynamicFogEffect()

@@ -68,11 +68,19 @@ namespace AtmosphereFX.UI
             y = Slider("Start distance", ModConfig.StartDistance, 0f, 10000f, 25f, y, v => { ModConfig.StartDistance = v; SettingsApplier.ApplyDynamicFog(); }, "0");
             y = Slider("Drift speed", ModConfig.WindSpeed, 0f, 0.05f, 0.001f, y, v => { ModConfig.WindSpeed = v; SettingsApplier.ApplyDynamicFog(); }, "0.000");
 
-            bool edgeFog = GUI.Toggle(new Rect(6f, y, 380f, 22f), ModConfig.EdgeFog, "Edge fog");
-            if (edgeFog != ModConfig.EdgeFog)
+            bool edgeFogDynamic = GUI.Toggle(new Rect(6f, y, 380f, 22f), ModConfig.EdgeFogDynamic, "Edge fog (dynamic)");
+            if (edgeFogDynamic != ModConfig.EdgeFogDynamic)
             {
-                ModConfig.EdgeFog = edgeFog;
+                ModConfig.EdgeFogDynamic = edgeFogDynamic;
                 SettingsApplier.ApplyDynamicFog();
+                Persist();
+            }
+            y += 26f;
+
+            bool edgeFogCubemap = GUI.Toggle(new Rect(6f, y, 380f, 22f), ModConfig.EdgeFogCubemap, "Edge fog (cubemap)");
+            if (edgeFogCubemap != ModConfig.EdgeFogCubemap)
+            {
+                ModConfig.EdgeFogCubemap = edgeFogCubemap;
                 SettingsApplier.ApplyCubemapFog();
                 Persist();
             }

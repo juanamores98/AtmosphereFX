@@ -23,7 +23,9 @@ namespace AtmosphereFX.Config
         [XmlElement("horizonHeight")] public float HorizonHeight { get => ModConfig.HorizonHeight; set => ModConfig.HorizonHeight = Clamp(value, 0f, 5000f); }
         [XmlElement("startDistance")] public float StartDistance { get => ModConfig.StartDistance; set => ModConfig.StartDistance = Clamp(value, 0f, 10000f); }
         [XmlElement("windSpeed")] public float WindSpeed { get => ModConfig.WindSpeed; set => ModConfig.WindSpeed = Clamp(value, 0f, 0.05f); }
-        [XmlElement("edgeFog")] public bool EdgeFog { get => ModConfig.EdgeFog; set => ModConfig.EdgeFog = value; }
+        [XmlElement("edgeFog")] public bool EdgeFogLegacy { get => ModConfig.EdgeFogDynamic; set { ModConfig.EdgeFogDynamic = value; ModConfig.EdgeFogCubemap = value; } }
+        [XmlElement("edgeFogDynamic")] public bool EdgeFogDynamic { get => ModConfig.EdgeFogDynamic; set => ModConfig.EdgeFogDynamic = value; }
+        [XmlElement("edgeFogCubemap")] public bool EdgeFogCubemap { get => ModConfig.EdgeFogCubemap; set => ModConfig.EdgeFogCubemap = value; }
 
         [XmlElement("cubemapFog")] public bool CubemapFog { get => ModConfig.CubemapFog; set => ModConfig.CubemapFog = value; }
         [XmlElement("offAtNight")] public bool OffAtNight { get => ModConfig.OffAtNight; set => ModConfig.OffAtNight = value; }

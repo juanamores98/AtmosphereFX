@@ -82,11 +82,17 @@ namespace AtmosphereFX.Options
                 SettingsApplier.ApplyDynamicFog();
             });
 
-            group.AddCheckbox("Edge fog", ModConfig.EdgeFog, sel =>
+            group.AddCheckbox("Edge fog (dynamic)", ModConfig.EdgeFogDynamic, sel =>
             {
-                ModConfig.EdgeFog = sel;
+                ModConfig.EdgeFogDynamic = sel;
                 ConfigStore.Save();
                 SettingsApplier.ApplyDynamicFog();
+            });
+
+            group.AddCheckbox("Edge fog (cubemap)", ModConfig.EdgeFogCubemap, sel =>
+            {
+                ModConfig.EdgeFogCubemap = sel;
+                ConfigStore.Save();
                 SettingsApplier.ApplyCubemapFog();
             });
         }

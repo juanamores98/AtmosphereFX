@@ -20,7 +20,7 @@ namespace AtmosphereFX.Config
         internal const float VanillaHorizonHeight = 800f;
         internal const float VanillaStartDistance = 194f;
         internal const float VanillaScatterFalloff = 1.7f;
-        internal const float VanillaScatterStrength = 1.7f;
+        internal const float VanillaScatterStrength = 1.72f;
 
         internal static readonly Color VanillaScatterColor = new Color(0.5647f, 0.9255f, 1f, 1f);
         internal static readonly Color DefaultVolumeColor = new Color(0.651f, 0.8863f, 1f, 1f);
@@ -34,7 +34,8 @@ namespace AtmosphereFX.Config
         internal static float HorizonHeight = VanillaHorizonHeight;
         internal static float StartDistance = VanillaStartDistance;
         internal static float WindSpeed = VanillaWindSpeed;
-        internal static bool EdgeFog = true;
+        internal static bool EdgeFogDynamic = true;
+        internal static bool EdgeFogCubemap = true;
 
         // ---- Classic fog ----
         internal static bool CubemapFog;
@@ -68,7 +69,8 @@ namespace AtmosphereFX.Config
             HorizonHeight = VanillaHorizonHeight;
             StartDistance = VanillaStartDistance;
             WindSpeed = VanillaWindSpeed;
-            EdgeFog = true;
+            EdgeFogDynamic = true;
+            EdgeFogCubemap = true;
             CubemapFog = false;
             OffAtNight = false;
             VolumeFog = true;

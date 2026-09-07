@@ -147,7 +147,9 @@ namespace AtmosphereFX
                     else if (name == "horizonheight" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.HorizonHeight = f;
                     else if (name == "startdistance" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.StartDistance = f;
                     else if (name == "windspeed" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.WindSpeed = f;
-                    else if (name == "edgefog" && bool.TryParse(val, out b)) ModConfig.EdgeFog = b;
+                    else if (name == "edgefog" && bool.TryParse(val, out b)) { ModConfig.EdgeFogDynamic = b; ModConfig.EdgeFogCubemap = b; }
+                    else if (name == "edgefogdynamic" && bool.TryParse(val, out b)) ModConfig.EdgeFogDynamic = b;
+                    else if (name == "edgefogcubemap" && bool.TryParse(val, out b)) ModConfig.EdgeFogCubemap = b;
                     else if (name == "cubemapfog" && bool.TryParse(val, out b)) ModConfig.CubemapFog = b;
                     else if (name == "offatnight" && bool.TryParse(val, out b)) ModConfig.OffAtNight = b;
                     else if (name == "volumefog" && bool.TryParse(val, out b)) ModConfig.VolumeFog = b;
@@ -188,7 +190,8 @@ namespace AtmosphereFX
                 "    <horizonHeight>{5}</horizonHeight>\n" +
                 "    <startDistance>{6}</startDistance>\n" +
                 "    <windSpeed>{7}</windSpeed>\n" +
-                "    <edgeFog>{8}</edgeFog>\n" +
+                "    <edgeFogDynamic>{8}</edgeFogDynamic>\n" +
+                "    <edgeFogCubemap>{23}</edgeFogCubemap>\n" +
                 "    <cubemapFog>{9}</cubemapFog>\n" +
                 "    <offAtNight>{10}</offAtNight>\n" +
                 "    <volumeFog>{11}</volumeFog>\n" +
@@ -212,7 +215,7 @@ namespace AtmosphereFX
                 ModConfig.HorizonHeight.ToString("0.0", c),
                 ModConfig.StartDistance.ToString("0.0", c),
                 ModConfig.WindSpeed.ToString("0.000", c),
-                ModConfig.EdgeFog.ToString().ToLowerInvariant(),
+                ModConfig.EdgeFogDynamic.ToString().ToLowerInvariant(),
                 ModConfig.CubemapFog.ToString().ToLowerInvariant(),
                 ModConfig.OffAtNight.ToString().ToLowerInvariant(),
                 ModConfig.VolumeFog.ToString().ToLowerInvariant(),
@@ -226,7 +229,8 @@ namespace AtmosphereFX
                 ModConfig.VolumeR.ToString("0.000", c),
                 ModConfig.VolumeG.ToString("0.000", c),
                 ModConfig.VolumeB.ToString("0.000", c),
-                ModConfig.VolumeStart.ToString("0.0", c));
+                ModConfig.VolumeStart.ToString("0.0", c),
+                ModConfig.EdgeFogCubemap.ToString().ToLowerInvariant());
         }
     }
 }
