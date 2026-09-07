@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using AtmosphereFX.Config;
 using AtmosphereFX.Runtime;
@@ -15,6 +15,17 @@ namespace AtmosphereFX.UI
 
         private Rect _rect = new Rect(ModConfig.WindowX, ModConfig.WindowY, 470f, 500f);
         private Vector2 _scroll;
+
+        /// <summary>
+        /// Lo que midio el contenido la ultima vez que se dibujo.
+        /// </summary>
+        /// <remarks>
+        /// El alto del area desplazable estaba fijado a mano. Cuando el contenido crecio por
+        /// encima de esa cifra, la barra dejo de llegar al final y el ultimo boton quedo fuera
+        /// de alcance: no habia forma de pulsarlo. Medirlo mientras se dibuja y usarlo en el
+        /// siguiente fotograma es un fotograma de retraso y ningun numero que mantener.
+        /// </remarks>
+        private float _contentHeight = 700f;
 
         internal void Draw(int id)
         {
@@ -45,9 +56,24 @@ namespace AtmosphereFX.UI
             }
 
             _scroll = GUI.BeginScrollView(new Rect(6f, 26f, _rect.width - 12f, _rect.height - 40f), _scroll,
-                new Rect(0f, 0f, _rect.width - 30f, 700f));
+                new Rect(0f, 0f, _rect.width - 30f, _contentHeight));
 
             float y = 6f;
+
+            // Los dos de un clic, arriba: es lo primero que se busca.
+            if (GUI.Button(new Rect(6f, y, 190f, 26f), "Vanilla"))
+            {
+                QuickPresets.ApplyVanilla();
+                Persist();
+            }
+
+            if (GUI.Button(new Rect(204f, y, 190f, 26f), "Optimized"))
+            {
+                QuickPresets.ApplyOptimized();
+                Persist();
+            }
+
+            y += 34f;
 
             // ---- Dynamic fog ----
             y = Section("Dynamic fog", y);
@@ -100,7 +126,8 @@ namespace AtmosphereFX.UI
             bool offAtNight = GUI.Toggle(new Rect(6f, y, 380f, 22f), ModConfig.OffAtNight, "Automatic off at night");
             if (offAtNight != ModConfig.OffAtNight)
             {
-                ModConfig.OffAtNight = offAtNight; // picked up by the per-frame watcher
+                ModConfig.OffAtNight = offAtNight;
+                SettingsApplier.ApplyCubemapFog();
                 Persist();
             }
             y += 26f;
@@ -150,6 +177,11 @@ namespace AtmosphereFX.UI
                 SettingsApplier.ApplyAll();
                 Persist();
             }
+
+            y += 40f;
+
+            // Lo que ocupo de verdad, para que la barra llegue hasta aqui la proxima vez.
+            _contentHeight = y;
 
             GUI.EndScrollView();
         }

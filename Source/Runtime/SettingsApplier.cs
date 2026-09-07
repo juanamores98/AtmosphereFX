@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using AtmosphereFX.Config;
 
 namespace AtmosphereFX.Runtime
@@ -30,9 +30,6 @@ namespace AtmosphereFX.Runtime
             ApplyCubemapFog();
             ApplyDynamicFogEffect();
             ApplyRenderProperties();
-
-            PerFrameWatcher.SunMatchedScatter = ModConfig.ScatterColorMode == 1;
-            PerFrameWatcher.OffAtNight = ModConfig.OffAtNight;
         }
 
         internal static void ApplyDynamicFog()

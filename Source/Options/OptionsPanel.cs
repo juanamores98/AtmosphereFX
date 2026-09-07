@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using ColossalFramework.UI;
 using ICities;
@@ -106,6 +106,18 @@ namespace AtmosphereFX.Options
                 ModConfig.CubemapFog = sel;
                 ConfigStore.Save();
                 SettingsApplier.ApplyCubemapFog();
+            });
+
+            group.AddButton("Vanilla (leave the game untouched)", () =>
+            {
+                QuickPresets.ApplyVanilla();
+                ConfigStore.Save();
+            });
+
+            group.AddButton("Optimized (the calibrated recipe)", () =>
+            {
+                QuickPresets.ApplyOptimized();
+                ConfigStore.Save();
             });
 
             group.AddCheckbox("Automatic off at night", ModConfig.OffAtNight, sel =>

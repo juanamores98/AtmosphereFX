@@ -1,4 +1,4 @@
-using ICities;
+﻿using ICities;
 using UnityEngine;
 
 namespace AtmosphereFX.Runtime
@@ -9,9 +9,13 @@ namespace AtmosphereFX.Runtime
     /// </summary>
     public class PerFrameWatcher : ThreadingExtensionBase
     {
-        internal static bool SunMatchedScatter;
-        internal static bool OffAtNight;
-
+        /// <remarks>
+        /// <b>Por que se lee la configuracion directamente.</b> Antes habia aqui dos copias de
+        /// esos ajustes, y solo se sincronizaban dentro de ApplyAll. Los conmutadores de la
+        /// ventana llaman a aplicadores parciales, asi que cambiarlos no actualizaba las copias:
+        /// habia que tocar alguna otra cosa para que la opcion "prendiera". Una copia de un
+        /// ajuste que ya existe no aporta nada y se olvida de actualizarse.
+        /// </remarks>
         private RenderProperties _renderProperties;
         private FogEffect _cubemapFog;
         private int _lookupTick;
@@ -33,7 +37,7 @@ namespace AtmosphereFX.Runtime
 
             _lookupTick++;
 
-            if (SunMatchedScatter)
+            if (Config.ModConfig.ScatterColorMode == 1)
             {
                 if (_renderProperties == null && (_lookupTick % 60 == 1))
                 {
@@ -46,7 +50,7 @@ namespace AtmosphereFX.Runtime
                 }
             }
 
-            if (OffAtNight)
+            if (Config.ModConfig.OffAtNight)
             {
                 if (_cubemapFog == null && (_lookupTick % 60 == 1))
                 {
