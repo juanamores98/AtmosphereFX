@@ -114,53 +114,7 @@ namespace AtmosphereFX.Runtime
 
         internal static void Restore()
         {
-            var fog = Object.FindObjectOfType<FogProperties>();
-            if (fog != null && _fogCaptured)
-            {
-                fog.m_ColorDecay = _colorDecay;
-                fog.m_FogDensity = _fogDensity;
-                fog.m_NoiseContribution = _noise;
-                fog.m_WindSpeed = _windSpeed;
-                fog.m_FogHeight = _fogHeight;
-                fog.m_HorizonHeight = _horizonHeight;
-                fog.m_FogStart = _fogStart;
-                fog.m_edgeFog = _fogEdgeFog;
-            }
-
-            var fogEffect = Object.FindObjectOfType<FogEffect>();
-            if (fogEffect != null && _fogEffectCaptured)
-            {
-                fogEffect.enabled = _fogEffectEnabled;
-                fogEffect.m_edgeFog = _fogEffectEdge;
-                fogEffect.m_UseVolumeFog = _staticVolume;
-                fogEffect.m_FogHeight = _originalStaticHeight;
-                fogEffect.m_3DFogStart = _originalStaticStart;
-                fogEffect.m_3DFogDistance = _originalStaticDistance;
-                fogEffect.m_edgeFogDistance = _originalStaticEdgeDistance;
-
-            }
-
-            var dayNightFog = Object.FindObjectOfType<DayNightFogEffect>();
-            if (dayNightFog != null && _dayNightFogCaptured)
-            {
-                dayNightFog.enabled = _dayNightFogEnabled;
-            }
-
-            var props = Object.FindObjectOfType<RenderProperties>();
-            if (props != null && _renderPropsCaptured)
-            {
-                props.m_useVolumeFog = _useVolumeFog;
-                props.m_inscatteringExponent = _inscatterExponent;
-                props.m_inscatteringIntensity = _inscatterIntensity;
-                props.m_inscatteringColor = _inscatterColor;
-                props.m_volumeFogColor = _volumeColor;
-                props.m_volumeFogStart = _volumeStart;
-                props.m_fogHeight = _originalVolumeHeight;
-                props.m_volumeFogDensity = _originalVolumeDensity;
-                props.m_volumeFogDistance = _originalVolumeDistance;
-                props.m_edgeFogDistance = _originalVolumeEdgeDistance;
-
-            }
+            Infrastructure.PropertyLedger.ReleaseAll();
         }
     }
 }

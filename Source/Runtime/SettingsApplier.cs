@@ -1,4 +1,5 @@
 using UnityEngine;
+using AtmosphereFX.Infrastructure;
 using AtmosphereFX.Config;
 
 namespace AtmosphereFX.Runtime
@@ -17,8 +18,18 @@ namespace AtmosphereFX.Runtime
         private static DayNightFogEffect _dynamicEffect;
         private static RenderProperties _renderProperties;
 
+        private static bool UseClassicFog
+        {
+            get
+            {
+                var sim = SimulationManager.instance;
+                return sim != null && !sim.m_isNightTime && (!sim.m_enableDayNight || FxInterop.ClassicRequest("fogWithCycle"));
+            }
+        }
+
         public static void ClearCache()
         {
+            PropertyLedger.Forget();
             Active = false;
             _fogProperties = null;
             _cubemapFog = null;
@@ -51,14 +62,14 @@ namespace AtmosphereFX.Runtime
                 }
             }
 
-            _fogProperties.m_ColorDecay = ModConfig.ColorDecay;
-            _fogProperties.m_FogDensity = ModConfig.Density;
-            _fogProperties.m_NoiseContribution = ModConfig.Noise;
-            _fogProperties.m_edgeFog = ModConfig.EdgeFogDynamic;
-            _fogProperties.m_FogHeight = (int)ModConfig.FogHeight;
-            _fogProperties.m_HorizonHeight = (int)ModConfig.HorizonHeight;
-            _fogProperties.m_FogStart = (int)ModConfig.StartDistance;
-            _fogProperties.m_WindSpeed = ModConfig.WindSpeed;
+            PropertyLedger.Write(_fogProperties, "m_ColorDecay", ModConfig.ColorDecay);
+            PropertyLedger.Write(_fogProperties, "m_FogDensity", ModConfig.Density);
+            PropertyLedger.Write(_fogProperties, "m_NoiseContribution", ModConfig.Noise);
+            PropertyLedger.Write(_fogProperties, "m_edgeFog", ModConfig.EdgeFogDynamic);
+            PropertyLedger.Write(_fogProperties, "m_FogHeight", (int)ModConfig.FogHeight);
+            PropertyLedger.Write(_fogProperties, "m_HorizonHeight", (int)ModConfig.HorizonHeight);
+            PropertyLedger.Write(_fogProperties, "m_FogStart", (int)ModConfig.StartDistance);
+            PropertyLedger.Write(_fogProperties, "m_WindSpeed", ModConfig.WindSpeed);
         }
 
         internal static void ApplyCubemapFog()
@@ -75,14 +86,19 @@ namespace AtmosphereFX.Runtime
                 }
             }
 
-            _cubemapFog.enabled = ModConfig.CubemapFog
-                && (!ModConfig.OffAtNight || SimulationManager.instance == null || !SimulationManager.instance.m_isNightTime);
-            _cubemapFog.m_edgeFog = ModConfig.EdgeFogCubemap;
-            if (ModConfig.StaticHeight >= 0f) _cubemapFog.m_FogHeight = ModConfig.StaticHeight;
-            if (ModConfig.StaticStart >= 0f) _cubemapFog.m_3DFogStart = ModConfig.StaticStart;
-            if (ModConfig.StaticDistance >= 0f) _cubemapFog.m_3DFogDistance = ModConfig.StaticDistance;
-            if (ModConfig.StaticEdgeDistance >= 0f) _cubemapFog.m_edgeFogDistance = ModConfig.StaticEdgeDistance;
-            if (ModConfig.StaticVolumeFog >= 0) _cubemapFog.m_UseVolumeFog = ModConfig.StaticVolumeFog == 1;
+            PropertyLedger.Write(_cubemapFog, "enabled", FxInterop.ClassicRequest("fogMode") ? UseClassicFog : ModConfig.CubemapFog
+                && (!ModConfig.OffAtNight || SimulationManager.instance == null || !SimulationManager.instance.m_isNightTime));
+            PropertyLedger.Write(_cubemapFog, "m_edgeFog", ModConfig.EdgeFogCubemap);
+            if (ModConfig.StaticHeight >= 0) PropertyLedger.Write(_cubemapFog, "m_FogHeight", ModConfig.StaticHeight);
+            else PropertyLedger.Release(_cubemapFog, "m_FogHeight");
+            if (ModConfig.StaticStart >= 0) PropertyLedger.Write(_cubemapFog, "m_3DFogStart", ModConfig.StaticStart);
+            else PropertyLedger.Release(_cubemapFog, "m_3DFogStart");
+            if (ModConfig.StaticDistance >= 0) PropertyLedger.Write(_cubemapFog, "m_3DFogDistance", ModConfig.StaticDistance);
+            else PropertyLedger.Release(_cubemapFog, "m_3DFogDistance");
+            if (ModConfig.StaticEdgeDistance >= 0) PropertyLedger.Write(_cubemapFog, "m_edgeFogDistance", ModConfig.StaticEdgeDistance);
+            else PropertyLedger.Release(_cubemapFog, "m_edgeFogDistance");
+            if (ModConfig.StaticVolumeFog >= 0) PropertyLedger.Write(_cubemapFog, "m_UseVolumeFog", ModConfig.StaticVolumeFog == 1);
+            else PropertyLedger.Release(_cubemapFog, "m_UseVolumeFog");
         }
 
         internal static void ApplyDynamicFogEffect()
@@ -99,7 +115,7 @@ namespace AtmosphereFX.Runtime
                 }
             }
 
-            _dynamicEffect.enabled = ModConfig.DynamicFog;
+            PropertyLedger.Write(_dynamicEffect, "enabled", FxInterop.ClassicRequest("fogMode") ? !UseClassicFog : ModConfig.DynamicFog);
         }
 
         internal static void ApplyRenderProperties()
@@ -116,25 +132,28 @@ namespace AtmosphereFX.Runtime
                 }
             }
 
-            _renderProperties.m_useVolumeFog = ModConfig.VolumeFog;
-            _renderProperties.m_inscatteringExponent = ModConfig.ScatterFalloff;
-            _renderProperties.m_inscatteringIntensity = ModConfig.ScatterStrength;
-            _renderProperties.m_inscatteringColor = ModConfig.ResolveScatterColor();
-            _renderProperties.m_volumeFogColor = ModConfig.ResolveVolumeColor();
-            _renderProperties.m_volumeFogStart = ModConfig.VolumeStart;
-            if (ModConfig.VolumeHeight >= 0f) _renderProperties.m_fogHeight = ModConfig.VolumeHeight;
-            if (ModConfig.VolumeDensity >= 0f) _renderProperties.m_volumeFogDensity = ModConfig.VolumeDensity;
-            if (ModConfig.VolumeDistance >= 0f) _renderProperties.m_volumeFogDistance = ModConfig.VolumeDistance;
-            if (ModConfig.VolumeEdgeDistance >= 0f) _renderProperties.m_edgeFogDistance = ModConfig.VolumeEdgeDistance;
+            PropertyLedger.Write(_renderProperties, "m_useVolumeFog", ModConfig.VolumeFog);
+            PropertyLedger.Write(_renderProperties, "m_inscatteringExponent", ModConfig.ScatterFalloff);
+            PropertyLedger.Write(_renderProperties, "m_inscatteringIntensity", ModConfig.ScatterStrength);
+            PropertyLedger.Write(_renderProperties, "m_inscatteringColor", ModConfig.ResolveScatterColor());
+            PropertyLedger.Write(_renderProperties, "m_volumeFogColor", ModConfig.ResolveVolumeColor());
+            PropertyLedger.Write(_renderProperties, "m_volumeFogStart", ModConfig.VolumeStart);
+            if (ModConfig.VolumeHeight >= 0) PropertyLedger.Write(_renderProperties, "m_fogHeight", ModConfig.VolumeHeight);
+            else PropertyLedger.Release(_renderProperties, "m_fogHeight");
+            if (ModConfig.VolumeDensity >= 0) PropertyLedger.Write(_renderProperties, "m_volumeFogDensity", ModConfig.VolumeDensity);
+            else PropertyLedger.Release(_renderProperties, "m_volumeFogDensity");
+            if (ModConfig.VolumeDistance >= 0) PropertyLedger.Write(_renderProperties, "m_volumeFogDistance", ModConfig.VolumeDistance);
+            else PropertyLedger.Release(_renderProperties, "m_volumeFogDistance");
+            if (ModConfig.VolumeEdgeDistance >= 0) PropertyLedger.Write(_renderProperties, "m_edgeFogDistance", ModConfig.VolumeEdgeDistance);
+            else PropertyLedger.Release(_renderProperties, "m_edgeFogDistance");
         }
 
         /// <summary>
-        /// Puts every touched component back to the exact state the game
-        /// shipped with (captured before the first modification).
+        /// Puts every touched component back to the acquired reference where no newer external write exists (captured before the first modification).
         /// </summary>
         internal static void RestoreGameDefaults()
         {
-            if (Active) VanillaSnapshot.Restore();
+            PropertyLedger.ReleaseAll();
             Active = false;
             VanillaSnapshot.ResetCapture();
         }

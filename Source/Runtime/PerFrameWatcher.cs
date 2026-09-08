@@ -46,10 +46,15 @@ namespace AtmosphereFX.Runtime
 
                 if (_renderProperties != null && DayNightProperties.instance != null)
                 {
-                    _renderProperties.m_inscatteringColor = DayNightProperties.instance.currentLightColor;
+                    Infrastructure.PropertyLedger.Write(_renderProperties, "m_inscatteringColor", DayNightProperties.instance.currentLightColor);
                 }
             }
 
+            if (Infrastructure.FxInterop.ClassicRequest("fogMode"))
+            {
+                SettingsApplier.ApplyCubemapFog(); SettingsApplier.ApplyDynamicFogEffect();
+                return;
+            }
             if (Config.ModConfig.OffAtNight)
             {
                 if (_cubemapFog == null && (_lookupTick % 60 == 1))
@@ -62,7 +67,7 @@ namespace AtmosphereFX.Runtime
                     bool shouldBeEnabled = !SimulationManager.instance.m_isNightTime && Config.ModConfig.CubemapFog;
                     if (_cubemapFog.enabled != shouldBeEnabled)
                     {
-                        _cubemapFog.enabled = shouldBeEnabled;
+                        Infrastructure.PropertyLedger.Write(_cubemapFog, "enabled", shouldBeEnabled);
                     }
                 }
             }
