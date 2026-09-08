@@ -1,4 +1,4 @@
-﻿using ICities;
+using ICities;
 using UnityEngine;
 using AtmosphereFX.Config;
 using AtmosphereFX.Options;
@@ -16,6 +16,8 @@ namespace AtmosphereFX
         private const string HostObjectName = "AtmosphereFX2";
 
         private GameObject _host;
+
+        public static string ActiveClaims { get { return SettingsApplier.Active && !ModConfig.VanillaMode ? "fog,fogEffect" : string.Empty; } }
 
         public string Name
         {
@@ -126,61 +128,65 @@ namespace AtmosphereFX
 
         public static bool ApplySuiteSection(System.Xml.XmlElement element)
         {
-            if (element == null) return false;
+            if (element == null || !element.Name.Equals("atmospherefx", System.StringComparison.OrdinalIgnoreCase)) return false;
             try
             {
+                var pending = new ConfigFile();
                 var culture = System.Globalization.CultureInfo.InvariantCulture;
                 foreach (System.Xml.XmlNode node in element.ChildNodes)
                 {
                     if (node.NodeType != System.Xml.XmlNodeType.Element) continue;
                     string name = node.Name.ToLowerInvariant();
                     string val = node.InnerText != null ? node.InnerText.Trim() : string.Empty;
-                    bool b;
-                    float f;
-                    int i;
 
-                    if (name == "dynamicfog" && bool.TryParse(val, out b)) ModConfig.DynamicFog = b;
-                    else if (name == "colordecay" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.ColorDecay = f;
-                    else if (name == "density" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.Density = f;
-                    else if (name == "noise" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.Noise = f;
-                    else if (name == "fogheight" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.FogHeight = f;
-                    else if (name == "horizonheight" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.HorizonHeight = f;
-                    else if (name == "startdistance" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.StartDistance = f;
-                    else if (name == "windspeed" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.WindSpeed = f;
-                    else if (name == "edgefog" && bool.TryParse(val, out b)) { ModConfig.EdgeFogDynamic = b; ModConfig.EdgeFogCubemap = b; }
-                    else if (name == "edgefogdynamic" && bool.TryParse(val, out b)) ModConfig.EdgeFogDynamic = b;
-                    else if (name == "edgefogcubemap" && bool.TryParse(val, out b)) ModConfig.EdgeFogCubemap = b;
-                    else if (name == "vanillamode" && bool.TryParse(val, out b))
+
+
+
+                    if (name == "dynamicfog") pending.DynamicFog = bool.Parse(val);
+                    else if (name == "applyonload") pending.ApplyOnLoad = bool.Parse(val);
+                    else if (name == "staticvolumefog") pending.StaticVolumeFog = int.Parse(val, culture);
+                    else if (name == "staticheight") pending.StaticHeight = float.Parse(val, culture);
+                    else if (name == "staticstart") pending.StaticStart = float.Parse(val, culture);
+                    else if (name == "staticdistance") pending.StaticDistance = float.Parse(val, culture);
+                    else if (name == "staticedgedistance") pending.StaticEdgeDistance = float.Parse(val, culture);
+                    else if (name == "volumeheight") pending.VolumeHeight = float.Parse(val, culture);
+                    else if (name == "volumedensity") pending.VolumeDensity = float.Parse(val, culture);
+                    else if (name == "volumedistance") pending.VolumeDistance = float.Parse(val, culture);
+                    else if (name == "volumeedgedistance") pending.VolumeEdgeDistance = float.Parse(val, culture);
+                    else if (name == "colordecay") pending.ColorDecay = float.Parse(val, culture);
+                    else if (name == "density") pending.Density = float.Parse(val, culture);
+                    else if (name == "noise") pending.Noise = float.Parse(val, culture);
+                    else if (name == "fogheight") pending.FogHeight = float.Parse(val, culture);
+                    else if (name == "horizonheight") pending.HorizonHeight = float.Parse(val, culture);
+                    else if (name == "startdistance") pending.StartDistance = float.Parse(val, culture);
+                    else if (name == "windspeed") pending.WindSpeed = float.Parse(val, culture);
+                    else if (name == "edgefog") { pending.EdgeFogDynamic = bool.Parse(val); pending.EdgeFogCubemap = bool.Parse(val); }
+                    else if (name == "edgefogdynamic") pending.EdgeFogDynamic = bool.Parse(val);
+                    else if (name == "edgefogcubemap") pending.EdgeFogCubemap = bool.Parse(val);
+                    else if (name == "vanillamode")
                     {
-                        // Mismo camino que la casilla de opciones.
-                        ModConfig.VanillaMode = b;
-                        if (b)
-                        {
-                            SettingsApplier.RestoreGameDefaults();
-                        }
-                        else
-                        {
-                            SettingsApplier.ApplyAll();
-                        }
+                        pending.VanillaMode = bool.Parse(val);
                     }
-                    else if (name == "cubemapfog" && bool.TryParse(val, out b)) ModConfig.CubemapFog = b;
-                    else if (name == "offatnight" && bool.TryParse(val, out b)) ModConfig.OffAtNight = b;
-                    else if (name == "volumefog" && bool.TryParse(val, out b)) ModConfig.VolumeFog = b;
-                    else if (name == "scatterfalloff" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.ScatterFalloff = f;
-                    else if (name == "scatterstrength" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.ScatterStrength = f;
-                    else if (name == "scattercolormode" && int.TryParse(val, out i)) ModConfig.ScatterColorMode = i;
-                    else if (name == "scatterr" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.ScatterR = f;
-                    else if (name == "scatterg" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.ScatterG = f;
-                    else if (name == "scatterb" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.ScatterB = f;
-                    else if (name == "autovolumecolor" && bool.TryParse(val, out b)) ModConfig.AutoVolumeColor = b;
-                    else if (name == "volumer" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.VolumeR = f;
-                    else if (name == "volumeg" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.VolumeG = f;
-                    else if (name == "volumeb" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.VolumeB = f;
-                    else if (name == "volumestart" && float.TryParse(val, System.Globalization.NumberStyles.Float, culture, out f)) ModConfig.VolumeStart = f;
+                    else if (name == "cubemapfog") pending.CubemapFog = bool.Parse(val);
+                    else if (name == "offatnight") pending.OffAtNight = bool.Parse(val);
+                    else if (name == "volumefog") pending.VolumeFog = bool.Parse(val);
+                    else if (name == "scatterfalloff") pending.ScatterFalloff = float.Parse(val, culture);
+                    else if (name == "scatterstrength") pending.ScatterStrength = float.Parse(val, culture);
+                    else if (name == "scattercolormode") pending.ScatterColorMode = int.Parse(val, culture);
+                    else if (name == "scatterr") pending.ScatterR = float.Parse(val, culture);
+                    else if (name == "scatterg") pending.ScatterG = float.Parse(val, culture);
+                    else if (name == "scatterb") pending.ScatterB = float.Parse(val, culture);
+                    else if (name == "autovolumecolor") pending.AutoVolumeColor = bool.Parse(val);
+                    else if (name == "volumer") pending.VolumeR = float.Parse(val, culture);
+                    else if (name == "volumeg") pending.VolumeG = float.Parse(val, culture);
+                    else if (name == "volumeb") pending.VolumeB = float.Parse(val, culture);
+                    else if (name == "volumestart") pending.VolumeStart = float.Parse(val, culture);
                 }
 
-                SettingsApplier.ApplyAll();
-                ConfigStore.SaveImmediate();
+                pending.Apply();
+                if (ModConfig.VanillaMode) SettingsApplier.RestoreGameDefaults();
+                else SettingsApplier.ApplyAll();
+                ConfigStore.Save();
                 return true;
             }
             catch (System.Exception e)
@@ -192,60 +198,22 @@ namespace AtmosphereFX
 
         public static string ExportSuiteSection()
         {
-            var c = System.Globalization.CultureInfo.InvariantCulture;
-            return string.Format(
-                "  <atmospherefx>\n" +
-                "    <dynamicFog>{0}</dynamicFog>\n" +
-                "    <colorDecay>{1}</colorDecay>\n" +
-                "    <density>{2}</density>\n" +
-                "    <noise>{3}</noise>\n" +
-                "    <fogHeight>{4}</fogHeight>\n" +
-                "    <horizonHeight>{5}</horizonHeight>\n" +
-                "    <startDistance>{6}</startDistance>\n" +
-                "    <windSpeed>{7}</windSpeed>\n" +
-                "    <edgeFogDynamic>{8}</edgeFogDynamic>\n" +
-                "    <edgeFogCubemap>{23}</edgeFogCubemap>\n" +
-                "    <cubemapFog>{9}</cubemapFog>\n" +
-                "    <offAtNight>{10}</offAtNight>\n" +
-                "    <volumeFog>{11}</volumeFog>\n" +
-                "    <scatterFalloff>{12}</scatterFalloff>\n" +
-                "    <scatterStrength>{13}</scatterStrength>\n" +
-                "    <scatterColorMode>{14}</scatterColorMode>\n" +
-                "    <scatterR>{15}</scatterR>\n" +
-                "    <scatterG>{16}</scatterG>\n" +
-                "    <scatterB>{17}</scatterB>\n" +
-                "    <autoVolumeColor>{18}</autoVolumeColor>\n" +
-                "    <volumeR>{19}</volumeR>\n" +
-                "    <volumeG>{20}</volumeG>\n" +
-                "    <volumeB>{21}</volumeB>\n" +
-                "    <volumeStart>{22}</volumeStart>\n" +
-                "    <vanillaMode>{24}</vanillaMode>\n" +
-                "  </atmospherefx>",
-                ModConfig.DynamicFog.ToString().ToLowerInvariant(),
-                ModConfig.ColorDecay.ToString("0.000", c),
-                ModConfig.Density.ToString("0.000000", c),
-                ModConfig.Noise.ToString("0.000", c),
-                ModConfig.FogHeight.ToString("0.0", c),
-                ModConfig.HorizonHeight.ToString("0.0", c),
-                ModConfig.StartDistance.ToString("0.0", c),
-                ModConfig.WindSpeed.ToString("0.000", c),
-                ModConfig.EdgeFogDynamic.ToString().ToLowerInvariant(),
-                ModConfig.CubemapFog.ToString().ToLowerInvariant(),
-                ModConfig.OffAtNight.ToString().ToLowerInvariant(),
-                ModConfig.VolumeFog.ToString().ToLowerInvariant(),
-                ModConfig.ScatterFalloff.ToString("0.000", c),
-                ModConfig.ScatterStrength.ToString("0.000", c),
-                ModConfig.ScatterColorMode.ToString(c),
-                ModConfig.ScatterR.ToString("0.000", c),
-                ModConfig.ScatterG.ToString("0.000", c),
-                ModConfig.ScatterB.ToString("0.000", c),
-                ModConfig.AutoVolumeColor.ToString().ToLowerInvariant(),
-                ModConfig.VolumeR.ToString("0.000", c),
-                ModConfig.VolumeG.ToString("0.000", c),
-                ModConfig.VolumeB.ToString("0.000", c),
-                ModConfig.VolumeStart.ToString("0.0", c),
-                ModConfig.EdgeFogCubemap.ToString().ToLowerInvariant(),
-                ModConfig.VanillaMode.ToString().ToLowerInvariant());
+            var source = new System.Xml.XmlDocument();
+            using (var writer = new System.IO.StringWriter(System.Globalization.CultureInfo.InvariantCulture))
+            {
+                new System.Xml.Serialization.XmlSerializer(typeof(ConfigFile)).Serialize(writer, new ConfigFile());
+                source.LoadXml(writer.ToString());
+            }
+            var doc = new System.Xml.XmlDocument();
+            var root = doc.CreateElement("atmospherefx"); doc.AppendChild(root);
+            foreach (System.Xml.XmlNode node in source.DocumentElement.ChildNodes)
+            {
+                if (node.Name == "windowX" || node.Name == "windowY") continue;
+                var target = doc.CreateElement(node.Name == "scatterMode" ? "scatterColorMode" : node.Name);
+                target.InnerText = node.InnerText;
+                root.AppendChild(target);
+            }
+            return root.OuterXml;
         }
     }
 }

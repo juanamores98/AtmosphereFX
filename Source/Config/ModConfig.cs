@@ -53,9 +53,19 @@ namespace AtmosphereFX.Config
         internal static float VolumeB = 1f;
         internal static float VolumeStart;
 
+        internal static int StaticVolumeFog = -1;
+        internal static float StaticHeight = -1f;
+        internal static float StaticStart = -1f;
+        internal static float StaticDistance = -1f;
+        internal static float StaticEdgeDistance = -1f;
+        internal static float VolumeHeight = -1f;
+        internal static float VolumeDensity = -1f;
+        internal static float VolumeDistance = -1f;
+        internal static float VolumeEdgeDistance = -1f;
+
         // ---- Behavior ----
         internal static bool ApplyOnLoad = true;
-        internal static bool VanillaMode; // suspend everything and keep the game untouched
+        internal static bool VanillaMode = true; // suspend everything and keep the game untouched
         internal static float WindowX = 40f;
         internal static float WindowY = 60f;
 
@@ -79,6 +89,11 @@ namespace AtmosphereFX.Config
             ScatterColorMode = 0;
             AutoVolumeColor = true;
             VolumeStart = 0f;
+            StaticVolumeFog = -1;
+            StaticHeight = StaticStart = StaticDistance = StaticEdgeDistance = -1f;
+            VolumeHeight = VolumeDensity = VolumeDistance = VolumeEdgeDistance = -1f;
+            ScatterR = 0.2f; ScatterG = 0.4f; ScatterB = 0.8f;
+            VolumeR = 0.7f; VolumeG = 0.8f; VolumeB = 1f;
             ApplyOnLoad = true;
         }
 

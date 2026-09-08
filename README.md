@@ -1,65 +1,44 @@
-﻿# AtmosphereFX v2
+# AtmosphereFX
 
-Control independiente de niebla y atmósfera para **Cities: Skylines**.
-Desarrollo original de **juanamores98** — segunda versión, con modelo de ajuste propio.
+Control de niebla dinÃ¡mica, clÃ¡sica y volumÃ©trica, bordes, dispersiÃ³n y profundidad para Cities: Skylines 1.
 
-## Qué hace
+## Uso
 
-**Dynamic Fog** (niebla dinámica día/noche):
-- Activar/desactivar la niebla dinámica.
-- Color decay (0–1), densidad (0–0.005), ruido (0–2): rangos más amplios que los valores por defecto del juego.
-- Techo de niebla y línea de horizonte por slider (0–5000).
-- Distancia de inicio (0–10000) y velocidad de deriva (0–0.05, control flotante real).
-- Edge fog.
+- Abrir con **Ctrl+Alt+A**, o UUI opcional.
+- Panel nativo preferido: **360 Ã— 680**, mÃ­nimo 280 Ã— 260. Secciones: Fog, Scatter, Volume.
+- **VANILLA** libera las modificaciones del mÃ³dulo y guarda ese modo. Restaura la referencia capturada respetando compaÃ±eros detectados; un tema u otro mod puede hacer que difiera del vanilla puro.
+- **OPTIMIZED** aplica la parte de este mÃ³dulo del **Default personal de RenderIt Plus**. Es una receta de aspecto, no de rendimiento.
+- Editar controles guarda un estado personalizado. El pie distingue VANILLA, OPTIMIZED y CUSTOM segÃºn los valores configurados.
+- Los sliders incluyen entrada decimal y refresco sin escrituras por repaint.
 
-**Cubemap Fog** (niebla clásica por cubemap):
-- Activación manual y apagado automático nocturno.
-- Volume fog con *scatter falloff* directo (0.5–10, sin transformaciones intermedias) y *scatter strength* (0–5).
-- Color de dispersión: automático, igualado al sol en tiempo real o personalizado (RGB).
-- Color del volume fog: automático o personalizado (RGB), y distancia de inicio independiente (0–4000).
+Niebla dinÃ¡mica apagada; clÃ¡sica activada solo de dÃ­a; niebla volumÃ©trica de RenderProperties apagada, volumen estÃ¡tico de FogEffect activado. Densidad 0.00006, inicio 2852, exponente efectivo 59049, intensidad 1.72. Profundidades estÃ¡ticas y volumÃ©tricas independientes.
 
-**General**:
-- Aplicar automáticamente al cargar un mapa (nuevo en v2).
-- Restablecer todo a valores vanilla con un clic.
+## Persistencia
 
-Todos los cambios se aplican en vivo y se guardan en `AtmosphereFX2.xml`.
+Archivos globales: **AtmosphereFX2.xml**, bajo `%LOCALAPPDATA%\Colossal Order\Cities_Skylines`. Independientes de la partida. Temporal y reemplazo con copia `.bak`, pendientes que se reintentan y guardado al cerrar el anfitriÃ³n. Se conserva lectura desde la ubicaciÃ³n histÃ³rica cuando procede. Un cierre forzado durante el intervalo de guardado puede perder el Ãºltimo cambio pendiente.
 
-## Compatibilidad
+Los built-ins no sobrescriben presets ya extraÃ­dos del usuario. Los botones de modo leen la receta incorporada; un antiguo archivo llamado Optimized puede contener valores distintos.
 
-- Cities: Skylines en Windows / Linux / macOS. Sin DLCs requeridos.
-- Funciona con el ciclo día/noche activado o desactivado.
-- No parchea métodos del juego: solo escribe valores en los componentes de render nativos.
-- Puede solaparse con otros mods de atmósfera/luz: gana el último en escribir.
+## IncrustaciÃ³n futura
 
-## Requisitos
+`FxModule.CreatePanel(parent, width, height)` crea el panel dentro de un `UIComponent`. Con padre no tiene arrastre ni botÃ³n de ventana. Ofrece `ReadState`, `ApplyState`, `Release`, `ApplyOptimized`, `Flush`, `Mode` y `Status`. Ver [arquitectura](ARQUITECTURA.md).
 
-- **No requiere Harmony** ni ninguna otra librería externa.
-- Compila contra .NET Framework 3.5 (el runtime Mono del juego lo provee).
+No se ha integrado con RenderIt Plus ni Arrebol; tampoco hay dependencia de esos productos.
 
-## Instalación
+## Compilar y verificar
 
-Copiar `AtmosphereFX.dll` a:
-
-```
-%LOCALAPPDATA%\Colossal Order\Cities_Skylines\Addons\Mods\AtmosphereFX\
+```powershell
+dotnet build AtmosphereFX.csproj -c Release
 ```
 
-## Compilación
+Target **net35 / C# 7.3**, referencias de CS1 instalado. El build normal genera `bin/Release/net35` y **no instala**. El target de despliegue requiere `DeployMod=true`; solo debe utilizarse con autorizaciÃ³n, juego cerrado y respaldo.
 
-```
-dotnet build -c Release
-```
+Regresiones conjuntas: `SceneFX/tests/Regression/Regression.csproj`, que enlaza el cÃ³digo actual de los cuatro repos hermanos. Prueba lÃ³gica en .NET 8 con dobles del motor; no valida render ni interacciÃ³n visual.
 
-El build despliega el DLL automáticamente a la carpeta de mods locales.
+## LÃ­mites
 
-## Arquitectura
+Las alturas siguen acotadas a 0â€“5000; la intensidad de dispersiÃ³n a 0â€“100. No equivalen a una entrada ilimitada del legado. No hay importador del XML de Fog Controller. Los modos de color necesitan comprobaciÃ³n visual y mediciÃ³n a exponentes extremos.
 
-El documento ejecutivo con la arquitectura, la API de suite, las rutas de
-configuración y los cambios de cada ciclo está en
-[`ARQUITECTURA.md`](ARQUITECTURA.md). `DESIGN.md` conserva la especificación
-funcional original.
+[Paridad](docs/PARIDAD.md) Â· [Estado](docs/ESTADO-SESION.md) Â· [Procedencia](PROCEDENCIA.md). `DESIGN.md` se conserva como referencia histÃ³rica.
 
-## Licencia
-
-[MIT-0](https://spdx.org/licenses/MIT-0.html) (MIT No Attribution) © 2026 juanamores98.
-Uso, copia, modificación, venta, distribución y sublicencia sin atribución ni condiciones.
+CÃ³digo propio bajo **MIT-0**, [LICENSE](LICENSE).

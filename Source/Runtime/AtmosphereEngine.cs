@@ -1,66 +1,12 @@
-﻿using UnityEngine;
-using AtmosphereFX.Config;
-using AtmosphereFX.UI;
-
+using UnityEngine;
 namespace AtmosphereFX.Runtime
 {
-    /// <summary>
-    /// Scene host for the in-game window (Ctrl+Alt+A) and the tray button state.
-    /// </summary>
     public class AtmosphereEngine : MonoBehaviour
     {
-        private static bool _open;
-
-        private FogWindow _window;
-        private int _windowId;
-
-        internal static void OpenWindow()
-        {
-            _open = true;
-        }
-
-        internal static void CloseWindow()
-        {
-            _open = false;
-        }
-
-        private void Start()
-        {
-            _windowId = GetInstanceID();
-            _window = new FogWindow();
-        }
-
-        /// <summary>Abre o cierra la ventana. Lo mismo que Ctrl+Alt+A.</summary>
-        /// <remarks>
-        /// Publica y estatica a proposito: es el punto por el que otro mod de la suite puede
-        /// llevarte a este panel sin que tengas que acordarte del atajo.
-        /// </remarks>
-        public static void ToggleWindow()
-        {
-            _open = !_open;
-        }
-
-        private void Update()
-        {
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.A))
-            {
-                ToggleWindow();
-            }
-
-            ConfigStore.CheckPendingSave();
-        }
-
-        private void OnDestroy()
-        {
-            ConfigStore.SaveImmediate();
-        }
-
-        private void OnGUI()
-        {
-            if (_open)
-            {
-                _window.Draw(_windowId);
-            }
-        }
+        internal static void OpenWindow() { FxModule.OpenStandalone(); }
+        internal static void CloseWindow() { FxModule.CloseStandalone(); }
+        public static void ToggleWindow() { FxModule.OpenStandalone(true); }
+        private void Update() { if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.A)) ToggleWindow(); Config.ConfigStore.CheckPendingSave(); }
+        private void OnDestroy() { Config.ConfigStore.SaveImmediate(); FxModule.CloseStandalone(); }
     }
 }

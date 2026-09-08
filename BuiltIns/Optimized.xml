@@ -1,0 +1,37 @@
+<atmospherefx>
+  <vanillaMode>false</vanillaMode>
+  <applyOnLoad>true</applyOnLoad>
+  <dynamicFog>false</dynamicFog>
+  <colorDecay>0.21</colorDecay>
+  <density>6E-05</density>
+  <noise>0.51</noise>
+  <fogHeight>500</fogHeight>
+  <horizonHeight>1300</horizonHeight>
+  <startDistance>2852</startDistance>
+  <windSpeed>0</windSpeed>
+  <edgeFogDynamic>false</edgeFogDynamic>
+  <edgeFogCubemap>false</edgeFogCubemap>
+  <cubemapFog>true</cubemapFog>
+  <offAtNight>true</offAtNight>
+  <volumeFog>false</volumeFog>
+  <scatterFalloff>59049.0</scatterFalloff>
+  <scatterStrength>1.72</scatterStrength>
+  <scatterColorMode>0</scatterColorMode>
+  <scatterR>0.5647059</scatterR>
+  <scatterG>0.9254902</scatterG>
+  <scatterB>1</scatterB>
+  <autoVolumeColor>false</autoVolumeColor>
+  <volumeR>0.6509804</volumeR>
+  <volumeG>0.8862745</volumeG>
+  <volumeB>1</volumeB>
+  <volumeStart>0</volumeStart>
+  <staticVolumeFog>1</staticVolumeFog>
+  <staticHeight>600</staticHeight>
+  <staticStart>3710</staticStart>
+  <staticDistance>4800</staticDistance>
+  <staticEdgeDistance>2800</staticEdgeDistance>
+  <volumeHeight>600</volumeHeight>
+  <volumeDensity>0.00141</volumeDensity>
+  <volumeDistance>4800</volumeDistance>
+  <volumeEdgeDistance>2800</volumeEdgeDistance>
+</atmospherefx>

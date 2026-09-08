@@ -1,4 +1,4 @@
-﻿using ICities;
+using ICities;
 using UnityEngine;
 
 namespace AtmosphereFX.Runtime
@@ -30,7 +30,7 @@ namespace AtmosphereFX.Runtime
 
         public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
         {
-            if (Config.ModConfig.VanillaMode)
+            if (Config.ModConfig.VanillaMode || !SettingsApplier.Active)
             {
                 return; // vanilla mode: the mod touches nothing per frame
             }

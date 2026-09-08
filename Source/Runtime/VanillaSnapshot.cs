@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace AtmosphereFX.Runtime
 {
@@ -33,6 +33,16 @@ namespace AtmosphereFX.Runtime
         private static Color _inscatterColor;
         private static Color _volumeColor;
         private static float _volumeStart;
+        private static bool _staticVolume;
+        private static float _originalStaticHeight;
+        private static float _originalStaticStart;
+        private static float _originalStaticDistance;
+        private static float _originalStaticEdgeDistance;
+        private static float _originalVolumeHeight;
+        private static float _originalVolumeDensity;
+        private static float _originalVolumeDistance;
+        private static float _originalVolumeEdgeDistance;
+
 
         internal static bool Captured
         {
@@ -60,6 +70,12 @@ namespace AtmosphereFX.Runtime
             {
                 _fogEffectEnabled = fogEffect.enabled;
                 _fogEffectEdge = fogEffect.m_edgeFog;
+                _staticVolume = fogEffect.m_UseVolumeFog;
+                _originalStaticHeight = fogEffect.m_FogHeight;
+                _originalStaticStart = fogEffect.m_3DFogStart;
+                _originalStaticDistance = fogEffect.m_3DFogDistance;
+                _originalStaticEdgeDistance = fogEffect.m_edgeFogDistance;
+
                 _fogEffectCaptured = true;
             }
 
@@ -79,6 +95,11 @@ namespace AtmosphereFX.Runtime
                 _inscatterColor = props.m_inscatteringColor;
                 _volumeColor = props.m_volumeFogColor;
                 _volumeStart = props.m_volumeFogStart;
+                _originalVolumeHeight = props.m_fogHeight;
+                _originalVolumeDensity = props.m_volumeFogDensity;
+                _originalVolumeDistance = props.m_volumeFogDistance;
+                _originalVolumeEdgeDistance = props.m_edgeFogDistance;
+
                 _renderPropsCaptured = true;
             }
         }
@@ -111,6 +132,12 @@ namespace AtmosphereFX.Runtime
             {
                 fogEffect.enabled = _fogEffectEnabled;
                 fogEffect.m_edgeFog = _fogEffectEdge;
+                fogEffect.m_UseVolumeFog = _staticVolume;
+                fogEffect.m_FogHeight = _originalStaticHeight;
+                fogEffect.m_3DFogStart = _originalStaticStart;
+                fogEffect.m_3DFogDistance = _originalStaticDistance;
+                fogEffect.m_edgeFogDistance = _originalStaticEdgeDistance;
+
             }
 
             var dayNightFog = Object.FindObjectOfType<DayNightFogEffect>();
@@ -128,6 +155,11 @@ namespace AtmosphereFX.Runtime
                 props.m_inscatteringColor = _inscatterColor;
                 props.m_volumeFogColor = _volumeColor;
                 props.m_volumeFogStart = _volumeStart;
+                props.m_fogHeight = _originalVolumeHeight;
+                props.m_volumeFogDensity = _originalVolumeDensity;
+                props.m_volumeFogDistance = _originalVolumeDistance;
+                props.m_edgeFogDistance = _originalVolumeEdgeDistance;
+
             }
         }
     }
