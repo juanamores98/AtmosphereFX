@@ -17,7 +17,7 @@ namespace AtmosphereFX
         public static void Release() { if (!Config.QuickPresets.ApplyVanilla()) throw new InvalidOperationException("VANILLA could not be applied."); Flush(); }
         public static void ApplyOptimized() { if (!Config.QuickPresets.ApplyOptimized()) throw new InvalidOperationException(AtmosphereFXMod.LastApplyError ?? "Default could not be applied."); Flush(); }
         public static void Flush() { Config.ConfigStore.SaveImmediate(); }
-        public static string Status { get { return !string.IsNullOrEmpty(Infrastructure.FxStorage.LastError) ? Infrastructure.FxStorage.LastError : Mode; } }
+        public static string Status { get { return !string.IsNullOrEmpty(Infrastructure.FxStorage.LastError) ? Infrastructure.FxStorage.LastError : !string.IsNullOrEmpty(Infrastructure.PropertyLedger.LastWarning) ? Infrastructure.PropertyLedger.LastWarning : Mode; } }
 
         public static PanelView CreatePanel(UIComponent parent, float width = PreferredWidth, float height = 680f)
         {
