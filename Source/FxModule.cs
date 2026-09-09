@@ -9,7 +9,8 @@ namespace AtmosphereFX
     /// <summary>Small public boundary for a standalone or embedded native panel.</summary>
     public static class FxModule
     {
-        public const float PreferredWidth = 360f;
+        public const float PreferredWidth = 380f;
+        public const float PreferredHeight = 540f;
         private static PanelView _standalone;
         public static string Mode { get { return Config.ModConfig.VanillaMode ? "GAME" : (Infrastructure.FxStorage.MatchesOptimized(ReadState(), typeof(AtmosphereFXMod)) ? "DEFAULT v3" : "CUSTOM"); } }
         public static string ReadState() { return AtmosphereFXMod.ExportSuiteSection(); }
@@ -19,7 +20,7 @@ namespace AtmosphereFX
         public static void Flush() { Config.ConfigStore.SaveImmediate(); }
         public static string Status { get { return !string.IsNullOrEmpty(Infrastructure.FxStorage.LastError) ? Infrastructure.FxStorage.LastError : !string.IsNullOrEmpty(Infrastructure.PropertyLedger.LastWarning) ? Infrastructure.PropertyLedger.LastWarning : Mode; } }
 
-        public static PanelView CreatePanel(UIComponent parent, float width = PreferredWidth, float height = 680f)
+        public static PanelView CreatePanel(UIComponent parent, float width = PreferredWidth, float height = PreferredHeight)
         {
             var view = new PanelView("AtmosphereFX", parent, width, height, Release, ApplyOptimized, () => Status);
             var page0 = view.AddPage("Fog");
@@ -33,10 +34,20 @@ namespace AtmosphereFX
             view.Number(page0, "Wind drift", () => Config.ModConfig.WindSpeed, v => Edit(() => Config.ModConfig.WindSpeed = v), 0f, 0.05f, 0.0001f);
             view.Check(page0, "Dynamic edge fog", () => Config.ModConfig.EdgeFogDynamic, v => Edit(() => Config.ModConfig.EdgeFogDynamic = v));
             view.Check(page0, "Classic edge fog", () => Config.ModConfig.EdgeFogCubemap, v => Edit(() => Config.ModConfig.EdgeFogCubemap = v));
+            view.Check(page0, "Apply settings when a city loads", () => Config.ModConfig.ApplyOnLoad, v => { Config.ModConfig.ApplyOnLoad = v; Config.ConfigStore.Save(); });
+            view.Info(page0, () => AtmosphereFXMod.ApplicationStatus ?? "Settings ready; appearance not yet verified in game");
             var page1 = view.AddPage("Volume");
+            view.Action(page1, "🧹 Anti-Blue Haze", () => Edit(() => {
+                Config.ModConfig.ScatterStrength = 0f;
+                Config.ModConfig.ScatterColorMode = 2;
+                Config.ModConfig.ScatterR = 0.5f;
+                Config.ModConfig.ScatterG = 0.5f;
+                Config.ModConfig.ScatterB = 0.5f;
+            }));
             view.Check(page1, "Classic fog", () => Config.ModConfig.CubemapFog, v => Edit(() => Config.ModConfig.CubemapFog = v));
             view.Check(page1, "Disable classic fog at night", () => Config.ModConfig.OffAtNight, v => Edit(() => Config.ModConfig.OffAtNight = v));
             view.Check(page1, "Volumetric fog", () => Config.ModConfig.VolumeFog, v => Edit(() => Config.ModConfig.VolumeFog = v));
+            view.Choice(page1, "Scatter colour", () => new[] { "Automatic", "Sun matched", "Custom RGB" }, () => Config.ModConfig.ScatterColorMode, v => Edit(() => Config.ModConfig.ScatterColorMode = v));
             view.Number(page1, "Scatter intensity", () => Config.ModConfig.ScatterStrength, v => Edit(() => Config.ModConfig.ScatterStrength = v), 0f, 100f, 0.01f);
             view.Number(page1, "Scatter exponent", () => Config.ModConfig.ScatterFalloff, v => Edit(() => Config.ModConfig.ScatterFalloff = v), 0.5f, 100000f, 0.1f, log: true);
             view.Number(page1, "Scatter red", () => Config.ModConfig.ScatterR, v => Edit(() => Config.ModConfig.ScatterR = v), 0f, 1f, 0.001f, enabled: () => Config.ModConfig.ScatterColorMode == 2);
@@ -57,9 +68,6 @@ namespace AtmosphereFX
             view.OptionalNumber(advanced, "Volume Density", () => Config.ModConfig.VolumeDensity, v => Edit(() => Config.ModConfig.VolumeDensity = v), 0f, 0.01f, 1e-05f, log: true);
             view.OptionalNumber(advanced, "Volume Distance", () => Config.ModConfig.VolumeDistance, v => Edit(() => Config.ModConfig.VolumeDistance = v), 0f, 20000f, 1f);
             view.OptionalNumber(advanced, "Volume Edge Distance", () => Config.ModConfig.VolumeEdgeDistance, v => Edit(() => Config.ModConfig.VolumeEdgeDistance = v), 0f, 20000f, 1f);
-            view.Choice(page1, "Scatter colour", () => new[] { "Automatic", "Sun matched", "Custom RGB" }, () => Config.ModConfig.ScatterColorMode, v => Edit(() => Config.ModConfig.ScatterColorMode = v));
-            view.Check(page0, "Apply settings when a city loads", () => Config.ModConfig.ApplyOnLoad, v => { Config.ModConfig.ApplyOnLoad = v; Config.ConfigStore.Save(); });
-            view.Info(page0, () => AtmosphereFXMod.ApplicationStatus ?? "Settings ready; appearance not yet verified in game");
             view.Refresh();
             return view;
         }
@@ -68,13 +76,13 @@ namespace AtmosphereFX
         {
             if (_standalone == null || _standalone.Root == null)
             {
-                _standalone = CreatePanel(null, PreferredWidth, Mathf.Min(680f, UIView.GetAView().fixedHeight - 24f));
+                _standalone = CreatePanel(null, PreferredWidth, Mathf.Min(PreferredHeight, UIView.GetAView().fixedHeight - 24f));
                 _standalone.Root.relativePosition = new Vector3(Mathf.Clamp(WindowX, 0f, Mathf.Max(0f, UIView.GetAView().fixedWidth - PreferredWidth)), Mathf.Clamp(WindowY, 0f, Mathf.Max(0f, UIView.GetAView().fixedHeight - _standalone.Root.height)));
                 _standalone.Root.eventPositionChanged += (c, value) => { WindowX = value.x; WindowY = value.y; SavePosition(); };
             }
             else _standalone.Root.isVisible = toggle ? !_standalone.Root.isVisible : true;
             var screen = UIView.GetAView();
-            _standalone.SetSize(PreferredWidth, Mathf.Min(680f, screen.fixedHeight - 24f));
+            _standalone.SetSize(PreferredWidth, Mathf.Min(PreferredHeight, screen.fixedHeight - 24f));
             var pos = _standalone.Root.relativePosition;
             _standalone.Root.relativePosition = new Vector3(Mathf.Clamp(pos.x, 0f, Mathf.Max(0f, screen.fixedWidth - _standalone.Root.width)), Mathf.Clamp(pos.y, 0f, Mathf.Max(0f, screen.fixedHeight - _standalone.Root.height)));
             _standalone.Refresh();
