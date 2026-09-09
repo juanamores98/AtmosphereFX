@@ -12,17 +12,17 @@ namespace AtmosphereFX
         public const float PreferredWidth = 380f;
         public const float PreferredHeight = 540f;
         private static PanelView _standalone;
-        public static string Mode { get { return Config.ModConfig.VanillaMode ? "GAME" : (Infrastructure.FxStorage.MatchesOptimized(ReadState(), typeof(AtmosphereFXMod)) ? "DEFAULT v3" : "CUSTOM"); } }
+        public static string Mode { get { return Config.ModConfig.VanillaMode ? "VANILLA" : (Infrastructure.FxStorage.MatchesOptimized(ReadState(), typeof(AtmosphereFXMod)) ? "OPTIMIZED" : "CUSTOM"); } }
         public static string ReadState() { return AtmosphereFXMod.ExportSuiteSection(); }
         public static bool ApplyState(string xml) { return AtmosphereFXMod.ApplySuiteSection(xml); }
         public static void Release() { if (!Config.QuickPresets.ApplyVanilla()) throw new InvalidOperationException("VANILLA could not be applied."); Flush(); }
         public static void ApplyOptimized() { if (!Config.QuickPresets.ApplyOptimized()) throw new InvalidOperationException(AtmosphereFXMod.LastApplyError ?? "Default could not be applied."); Flush(); }
         public static void Flush() { Config.ConfigStore.SaveImmediate(); }
-        public static string Status { get { return !string.IsNullOrEmpty(Infrastructure.FxStorage.LastError) ? Infrastructure.FxStorage.LastError : !string.IsNullOrEmpty(Infrastructure.PropertyLedger.LastWarning) ? Infrastructure.PropertyLedger.LastWarning : Mode; } }
+        public static string Status { get { return !string.IsNullOrEmpty(Infrastructure.FxStorage.LastError) ? Infrastructure.FxStorage.LastError : !string.IsNullOrEmpty(Infrastructure.PropertyLedger.LastWarning) ? Infrastructure.PropertyLedger.LastWarning : "Config: " + UiText.Get(Mode); } }
 
         public static PanelView CreatePanel(UIComponent parent, float width = PreferredWidth, float height = PreferredHeight)
         {
-            var view = new PanelView("AtmosphereFX", parent, width, height, Release, ApplyOptimized, () => Status);
+            var view = new PanelView("AtmosphereFX", parent, width, height, Release, ApplyOptimized, () => Status, () => Mode);
             var page0 = view.AddPage("Fog");
             view.Check(page0, "Dynamic fog", () => Config.ModConfig.DynamicFog, v => Edit(() => Config.ModConfig.DynamicFog = v));
             view.Number(page0, "Fog start (m)", () => Config.ModConfig.StartDistance, v => Edit(() => Config.ModConfig.StartDistance = v), 0f, 10000f, 1f);
