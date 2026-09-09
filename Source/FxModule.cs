@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using ColossalFramework.UI;
 using UnityEngine;
@@ -37,7 +37,7 @@ namespace AtmosphereFX
             view.Check(page0, "Apply settings when a city loads", () => Config.ModConfig.ApplyOnLoad, v => { Config.ModConfig.ApplyOnLoad = v; Config.ConfigStore.Save(); });
             view.Info(page0, () => AtmosphereFXMod.ApplicationStatus ?? "Settings ready; appearance not yet verified in game");
             var page1 = view.AddPage("Volume");
-            view.Action(page1, "🧹 Anti-Blue Haze", () => Edit(() => {
+            view.Action(page1, "Anti-Blue Haze", () => Edit(() => {
                 Config.ModConfig.ScatterStrength = 0f;
                 Config.ModConfig.ScatterColorMode = 2;
                 Config.ModConfig.ScatterR = 0.5f;

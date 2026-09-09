@@ -1,4 +1,4 @@
-# Paridad de AtmosphereFX
+﻿# Paridad de AtmosphereFX
 
 Revisión: 2026-09-08. Requisitos del encargo y de la matriz de comportamiento de `ModdingResearch/EncargosFX/Auditoria-20260908/INFORME.md`. No implica adopción de implementaciones GPL.
 
@@ -14,3 +14,5 @@ Revisión: 2026-09-08. Requisitos del encargo y de la matriz de comportamiento d
 Las pruebas citadas están en `SceneFX/tests/Regression/Program.cs`. Firmas compiladas contra DLL reales; aserciones ejecutadas con dobles, no Unity. UI, imagen, tiempo de respuesta y rendimiento pendientes de observación.
 
 **No se declara paridad total.** Las alturas siguen acotadas a 0–5000; la intensidad de dispersión a 0–100. No equivalen a una entrada ilimitada del legado. No hay importador del XML de Fog Controller. Los modos de color necesitan comprobación visual y medición a exponentes extremos.
+
+Para la cobertura de lo que en Render It! Plus tiene licencia restrictiva -Relight, Fog Controller, Eyecandy X y Daylight Classic, que es GPL-3.0- el documento es `SceneFX/docs/RELEVO-RENDERIT-PLUS.md`.
