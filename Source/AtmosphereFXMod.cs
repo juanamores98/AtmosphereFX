@@ -41,6 +41,8 @@ namespace AtmosphereFX
 
         public override void OnLevelLoaded(LoadMode mode)
         {
+            ConfigStore.Load();
+
             if (ModConfig.VanillaMode)
             {
                 SettingsApplier.RestoreGameDefaults();
