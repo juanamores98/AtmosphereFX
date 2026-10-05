@@ -57,7 +57,7 @@ namespace AtmosphereFX
             _host.AddComponent<AtmosphereEngine>();
 
             UuiButton.Register(
-                "AtmosphereFX v2",
+                "AtmosphereFX",
                 "Fog and atmosphere tuning (Ctrl+Alt+A)",
                 TrayIcon.Make(),
                 show => AtmosphereEngine.OpenWindow());

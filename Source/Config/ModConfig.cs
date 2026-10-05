@@ -9,7 +9,7 @@ namespace AtmosphereFX.Config
     /// </summary>
     internal static class ModConfig
     {
-        internal const string ModName = "AtmosphereFX v2";
+        internal const string ModName = "AtmosphereFX";
 
         // Reference values of an unmodified game, used by the reset action.
         internal const float VanillaColorDecay = 0.2f;
